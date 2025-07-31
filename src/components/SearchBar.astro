@@ -1,14 +1,412 @@
 ---
-// SearchBar component - will be implemented in task 8.2
+// SearchBar component - Advanced search with Fuse.js integration
+export interface Props {
+  placeholder?: string;
+  onSearch?: string; // Callback function name
+  showSuggestions?: boolean;
+  maxResults?: number;
+}
+
+const { 
+  placeholder = "ค้นหาคำศัพท์... เช่น API, JSON, React",
+  onSearch,
+  showSuggestions = true,
+  maxResults = 10
+} = Astro.props;
+
+// Generate unique ID for this search bar
+const searchId = `search-${Math.random().toString(36).substr(2, 9)}`;
 ---
 
-<!-- Placeholder for SearchBar component -->
-<div class="search-bar">
-  <input type="text" placeholder="ค้นหาคำศัพท์..." />
+<div class="search-bar-container relative" data-search-id={searchId}>
+  <!-- Search Input -->
+  <div class="relative">
+    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+      <svg class="w-5 h-5 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+    </div>
+    
+    <input 
+      type="text"
+      class="search-input w-full pl-12 pr-12 py-3 text-base border border-border rounded-xl focus:ring-2 focus:ring-ring focus:border-primary bg-input text-foreground placeholder:text-muted-foreground transition-all duration-200"
+      placeholder={placeholder}
+      autocomplete="off"
+      spellcheck="false"
+      data-search-input
+    />
+    
+    <!-- Clear button -->
+    <button 
+      class="clear-button absolute inset-y-0 right-0 pr-4 flex items-center opacity-0 transition-opacity"
+      title="ล้างการค้นหา"
+      data-clear-search
+    >
+      <svg class="w-5 h-5 text-muted-foreground hover:text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+      </svg>
+    </button>
+    
+    <!-- Loading indicator -->
+    <div class="loading-indicator absolute inset-y-0 right-0 pr-4 flex items-center opacity-0 transition-opacity">
+      <svg class="w-5 h-5 text-primary animate-spin" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+      </svg>
+    </div>
+  </div>
+  
+  <!-- Search Results Dropdown -->
+  <div class="search-results absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-lg z-50 max-h-96 overflow-y-auto hidden">
+    <!-- Results will be populated by JavaScript -->
+    <div class="search-results-content"></div>
+    
+    <!-- No results message -->
+    <div class="no-results hidden p-4 text-center text-muted-foreground">
+      <svg class="w-8 h-8 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+      </svg>
+      <p class="text-sm">ไม่พบผลการค้นหา</p>
+      <p class="text-xs mt-1">ลองใช้คำค้นหาอื่น</p>
+    </div>
+    
+    <!-- Popular searches -->
+    <div class="popular-searches p-4 border-t border-border">
+      <h4 class="text-sm font-medium text-foreground mb-2">คำค้นหายอดนิยม</h4>
+      <div class="flex flex-wrap gap-2">
+        <button class="popular-term px-2 py-1 text-xs bg-muted hover:bg-accent rounded-full transition-colors" data-term="API">API</button>
+        <button class="popular-term px-2 py-1 text-xs bg-muted hover:bg-accent rounded-full transition-colors" data-term="JavaScript">JavaScript</button>
+        <button class="popular-term px-2 py-1 text-xs bg-muted hover:bg-accent rounded-full transition-colors" data-term="React">React</button>
+        <button class="popular-term px-2 py-1 text-xs bg-muted hover:bg-accent rounded-full transition-colors" data-term="JSON">JSON</button>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Search overlay (for mobile) -->
+  <div class="search-overlay fixed inset-0 bg-background/80 backdrop-blur-sm z-40 hidden lg:hidden"></div>
 </div>
 
+<script>
+  // Import Fuse.js dynamically
+  import('fuse.js').then(({ default: Fuse }) => {
+    class SearchBar {
+      private container: HTMLElement;
+      private input: HTMLInputElement;
+      private results: HTMLElement;
+      private clearButton: HTMLElement;
+      private loadingIndicator: HTMLElement;
+      private fuse: any = null;
+      private searchIndex: any[] = [];
+      private debounceTimer: number = 0;
+      private currentQuery: string = '';
+      private selectedIndex: number = -1;
+      
+      constructor(container: HTMLElement) {
+        this.container = container;
+        this.input = container.querySelector('[data-search-input]') as HTMLInputElement;
+        this.results = container.querySelector('.search-results') as HTMLElement;
+        this.clearButton = container.querySelector('[data-clear-search]') as HTMLElement;
+        this.loadingIndicator = container.querySelector('.loading-indicator') as HTMLElement;
+        
+        this.init();
+      }
+      
+      async init() {
+        await this.loadSearchIndex();
+        this.setupEventListeners();
+        this.setupKeyboardNavigation();
+      }
+      
+      async loadSearchIndex() {
+        try {
+          const response = await fetch('/api/search-index.json');
+          this.searchIndex = await response.json();
+          
+          // Initialize Fuse.js
+          this.fuse = new Fuse(this.searchIndex, {
+            keys: [
+              { name: 'title', weight: 0.4 },
+              { name: 'description', weight: 0.3 },
+              { name: 'category', weight: 0.2 },
+              { name: 'tags', weight: 0.1 }
+            ],
+            threshold: 0.3,
+            includeScore: true,
+            includeMatches: true
+          });
+        } catch (error) {
+          console.error('Failed to load search index:', error);
+        }
+      }
+      
+      setupEventListeners() {
+        // Input events
+        this.input.addEventListener('input', (e) => {
+          const query = (e.target as HTMLInputElement).value;
+          this.handleSearch(query);
+        });
+        
+        this.input.addEventListener('focus', () => {
+          if (this.currentQuery) {
+            this.showResults();
+          } else {
+            this.showPopularSearches();
+          }
+        });
+        
+        // Clear button
+        this.clearButton.addEventListener('click', () => {
+          this.clearSearch();
+        });
+        
+        // Popular terms
+        this.container.addEventListener('click', (e) => {
+          const target = e.target as HTMLElement;
+          if (target.classList.contains('popular-term')) {
+            const term = target.dataset.term;
+            if (term) {
+              this.input.value = term;
+              this.handleSearch(term);
+            }
+          }
+        });
+        
+        // Click outside to close
+        document.addEventListener('click', (e) => {
+          if (!this.container.contains(e.target as Node)) {
+            this.hideResults();
+          }
+        });
+      }
+      
+      setupKeyboardNavigation() {
+        this.input.addEventListener('keydown', (e) => {
+          const resultItems = this.results.querySelectorAll('.search-result-item');
+          
+          switch (e.key) {
+            case 'ArrowDown':
+              e.preventDefault();
+              this.selectedIndex = Math.min(this.selectedIndex + 1, resultItems.length - 1);
+              this.updateSelection(resultItems);
+              break;
+              
+            case 'ArrowUp':
+              e.preventDefault();
+              this.selectedIndex = Math.max(this.selectedIndex - 1, -1);
+              this.updateSelection(resultItems);
+              break;
+              
+            case 'Enter':
+              e.preventDefault();
+              if (this.selectedIndex >= 0 && resultItems[this.selectedIndex]) {
+                const link = resultItems[this.selectedIndex].querySelector('a') as HTMLAnchorElement;
+                if (link) link.click();
+              }
+              break;
+              
+            case 'Escape':
+              this.hideResults();
+              this.input.blur();
+              break;
+          }
+        });
+      }
+      
+      handleSearch(query: string) {
+        this.currentQuery = query;
+        
+        // Show/hide clear button
+        if (query) {
+          this.clearButton.style.opacity = '1';
+        } else {
+          this.clearButton.style.opacity = '0';
+        }
+        
+        // Debounce search
+        clearTimeout(this.debounceTimer);
+        this.debounceTimer = window.setTimeout(() => {
+          this.performSearch(query);
+        }, 300);
+      }
+      
+      performSearch(query: string) {
+        if (!query.trim()) {
+          this.showPopularSearches();
+          return;
+        }
+        
+        this.showLoading();
+        
+        // Simulate network delay for better UX
+        setTimeout(() => {
+          const results = this.fuse ? this.fuse.search(query) : [];
+          this.displayResults(results, query);
+          this.hideLoading();
+        }, 100);
+      }
+      
+      displayResults(results: any[], query: string) {
+        const content = this.results.querySelector('.search-results-content') as HTMLElement;
+        const noResults = this.results.querySelector('.no-results') as HTMLElement;
+        const popularSearches = this.results.querySelector('.popular-searches') as HTMLElement;
+        
+        if (results.length === 0) {
+          content.innerHTML = '';
+          noResults.classList.remove('hidden');
+          popularSearches.classList.add('hidden');
+        } else {
+          noResults.classList.add('hidden');
+          popularSearches.classList.add('hidden');
+          
+          content.innerHTML = results.slice(0, 10).map((result, index) => {
+            const item = result.item;
+            const highlightedTitle = this.highlightMatches(item.title, query);
+            const highlightedDescription = this.highlightMatches(item.description, query);
+            
+            return `
+              <a href="/glossary/${item.slug}" class="search-result-item block p-4 hover:bg-accent transition-colors ${index === 0 ? 'border-t-0' : 'border-t border-border'}">
+                <div class="flex items-start justify-between">
+                  <div class="flex-1">
+                    <h4 class="font-semibold text-foreground mb-1">${highlightedTitle}</h4>
+                    <p class="text-sm text-muted-foreground mb-2 line-clamp-2">${highlightedDescription}</p>
+                    <div class="flex items-center gap-2">
+                      <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary border border-primary/20">
+                        ${item.category}
+                      </span>
+                      ${item.tags.slice(0, 2).map((tag: string) => `
+                        <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-muted text-muted-foreground">
+                          #${tag}
+                        </span>
+                      `).join('')}
+                    </div>
+                  </div>
+                  <svg class="w-4 h-4 text-muted-foreground flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                  </svg>
+                </div>
+              </a>
+            `;
+          }).join('');
+        }
+        
+        this.showResults();
+        this.selectedIndex = -1;
+      }
+      
+      highlightMatches(text: string, query: string): string {
+        if (!query) return text;
+        
+        const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+        return text.replace(regex, '<mark class="bg-primary/20 text-primary px-0.5 rounded">$1</mark>');
+      }
+      
+      showPopularSearches() {
+        const content = this.results.querySelector('.search-results-content') as HTMLElement;
+        const noResults = this.results.querySelector('.no-results') as HTMLElement;
+        const popularSearches = this.results.querySelector('.popular-searches') as HTMLElement;
+        
+        content.innerHTML = '';
+        noResults.classList.add('hidden');
+        popularSearches.classList.remove('hidden');
+        
+        this.showResults();
+      }
+      
+      updateSelection(items: NodeListOf<Element>) {
+        items.forEach((item, index) => {
+          if (index === this.selectedIndex) {
+            item.classList.add('bg-accent');
+          } else {
+            item.classList.remove('bg-accent');
+          }
+        });
+      }
+      
+      showResults() {
+        this.results.classList.remove('hidden');
+      }
+      
+      hideResults() {
+        this.results.classList.add('hidden');
+        this.selectedIndex = -1;
+      }
+      
+      showLoading() {
+        this.loadingIndicator.style.opacity = '1';
+      }
+      
+      hideLoading() {
+        this.loadingIndicator.style.opacity = '0';
+      }
+      
+      clearSearch() {
+        this.input.value = '';
+        this.currentQuery = '';
+        this.clearButton.style.opacity = '0';
+        this.hideResults();
+        this.input.focus();
+      }
+    }
+    
+    // Initialize all search bars
+    document.addEventListener('DOMContentLoaded', () => {
+      const searchBars = document.querySelectorAll('.search-bar-container');
+      searchBars.forEach(container => {
+        new SearchBar(container as HTMLElement);
+      });
+    });
+  }).catch(error => {
+    console.error('Failed to load Fuse.js:', error);
+    // Fallback to basic search functionality
+  });
+</script>
+
 <style>
-  .search-bar {
-    /* Styles will be implemented with Tailwind CSS in task 8.2 */
+  /* Search input focus animation */
+  .search-input:focus {
+    transform: translateY(-1px);
+    box-shadow: 0 10px 25px -5px rgba(34, 197, 94, 0.1), 0 10px 10px -5px rgba(34, 197, 94, 0.04);
+  }
+  
+  /* Results dropdown animation */
+  .search-results {
+    animation: slideDown 0.2s ease-out;
+  }
+  
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  /* Line clamp for descriptions */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* Custom scrollbar for results */
+  .search-results::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .search-results::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  
+  .search-results::-webkit-scrollbar-thumb {
+    background: oklch(0.88 0.02 125);
+    border-radius: 3px;
+  }
+  
+  .search-results::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.45 0.02 135);
   }
 </style>

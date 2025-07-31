@@ -1,8 +1,6 @@
 # แผนการพัฒนา
 
-- [ ] 1. ตั้งค่า Content Collections และโครงสร้างโปรเจกต์
-
-
+- [x] 1. ตั้งค่า Content Collections และโครงสร้างโปรเจกต์
 
 
   - สร้างการกำหนดค่า content collections พร้อม Zod schema validation
@@ -11,78 +9,95 @@
   - ติดตั้งและกำหนดค่า Tailwind CSS สำหรับ styling
   - _Requirements: 4.1, 4.2, 4.3, 4.4_
 
-- [ ] 2. สร้างเนื้อหา glossary ตัวอย่าง
+- [x] 2. สร้างเนื้อหา glossary ตัวอย่าง
   - เขียนไฟล์ Markdown เริ่มต้นสำหรับคำศัพท์เทคนิคหลัก (API, JSON, CI/CD, Promise, Git Rebase, REST)
   - ใช้โครงสร้าง frontmatter ที่ถูกต้องพร้อมฟิลด์ที่จำเป็นทั้งหมด
   - เพิ่มตัวอย่างโค้ดและการอ้างอิงคำศัพท์ที่เกี่ยวข้องในเนื้อหาตัวอย่าง
   - _Requirements: 4.1, 4.2, 4.3, 2.2_
 
-- [ ] 3. พัฒนาระบบ layout และ styling พื้นฐาน
+- [x] 3. พัฒนาระบบ layout และ styling พื้นฐาน
   - สร้าง BaseLayout component พร้อมโครงสร้าง HTML และ meta tags ที่เหมาะสม
   - ใช้ Tailwind CSS สำหรับ styling และ theme variables สำหรับโหมดสว่าง/มืด
   - เพิ่มพื้นฐาน responsive design และระบบ typography ด้วย Tailwind
   - _Requirements: 5.1, 5.2, 5.4, 6.2_
 
-- [ ] 4. สร้าง core glossary components
-- [ ] 4.1 สร้าง GlossaryCard component
+- [x] 4. สร้าง core glossary components
+
+- [x] 4.1 สร้าง GlossaryCard component
+
   - พัฒนา card component เพื่อแสดงสรุปคำศัพท์พร้อมชื่อ หมวดหมู่ และคำอธิบาย
   - เพิ่ม hover effects และ responsive design ด้วย Tailwind CSS
   - รวม category badge styling โดยใช้ Tailwind utility classes
   - _Requirements: 1.1, 1.2, 1.3_
 
-- [ ] 4.2 สร้าง GlossaryLayout component
+- [x] 4.2 สร้าง GlossaryLayout component
+
   - สร้าง layout เฉพาะสำหรับหน้าคำศัพท์แต่ละคำ
   - รวม navigation breadcrumbs และฟังก์ชันกลับไปหน้า glossary
   - เพิ่มการสร้าง meta tag ที่เหมาะสมสำหรับ SEO
   - _Requirements: 2.1, 2.3, 5.2, 5.4_
 
-- [ ] 4.3 สร้าง RelatedLinks component
+- [x] 4.3 สร้าง RelatedLinks component
+
   - พัฒนา component เพื่อแสดงคำศัพท์ที่เกี่ยวข้องพร้อมการสร้างลิงก์อัตโนมัติ
   - เพิ่มตรรกะในการแปลง related term slugs เป็นข้อมูลคำศัพท์เต็ม
   - รวมการจัดกลุ่มตามหมวดหมู่และ styling ที่เหมาะสม
   - _Requirements: 2.4_
 
-- [ ] 5. พัฒนาหน้าแรกพร้อมรายการคำศัพท์
+- [x] 5. พัฒนาหน้าแรกพร้อมรายการคำศัพท์
   - สร้างหน้า index.astro ที่ดึงคำศัพท์ทั้งหมดโดยใช้ getCollection
   - พัฒนา grid layout ที่แสดง GlossaryCard components ด้วย Tailwind CSS
   - เพิ่มฟังก์ชันการกรองตามหมวดหมู่พร้อม Tailwind styling
   - รวม meta tags และการปรับแต่ง SEO ที่เหมาะสม
   - _Requirements: 1.1, 1.2, 1.3, 1.4, 5.1, 5.2_
 
-- [ ] 6. สร้างหน้าคำศัพท์แบบ dynamic
+- [x] 6. สร้างหน้าคำศัพท์แบบ dynamic
+
+
   - พัฒนา [slug].astro พร้อม getStaticPaths สำหรับคำศัพท์ทั้งหมด
   - เพิ่มการแสดงผลเนื้อหาที่เหมาะสมพร้อมการประมวลผล Markdown
   - รวมส่วนคำศัพท์ที่เกี่ยวข้องโดยใช้ RelatedLinks component
   - พัฒนาการจัดการข้อผิดพลาดที่เหมาะสมสำหรับคำศัพท์ที่หายไป
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 5.1, 5.2_
 
-- [ ] 7. พัฒนา code block component พร้อม syntax highlighting
+- [x] 7. พัฒนา code block component พร้อม syntax highlighting
+
+
   - สร้าง CodeBlock component พร้อม syntax highlighting โดยใช้ Prism.js หรือ Shiki
   - เพิ่มฟังก์ชัน copy-to-clipboard พร้อม client-side JavaScript
   - รวมการตรวจจับภาษาและการสนับสนุนหมายเลขบรรทัด
   - _Requirements: 2.2, 2.5, 6.1_
 
-- [ ] 8. สร้างฟังก์ชันการค้นหา
-- [ ] 8.1 สร้างการสร้าง search index
+- [x] 8. สร้างฟังก์ชันการค้นหา
+
+
+- [x] 8.1 สร้างการสร้าง search index
+
+
   - พัฒนาการสร้าง search index ในเวลา build จากคำศัพท์ทั้งหมด
   - รวมชื่อคำศัพท์ คำอธิบาย เนื้อหา และ tags ในข้อมูลการค้นหา
   - สร้างไฟล์ JSON search index สำหรับการใช้งานฝั่ง client
   - _Requirements: 3.1, 3.2, 3.5_
 
-- [ ] 8.2 พัฒนา SearchBar component
+- [x] 8.2 พัฒนา SearchBar component
+
+
   - สร้าง interactive search component พร้อมการรวม Fuse.js
   - เพิ่มการกรองแบบ real-time พร้อมการจัดการ input แบบ debounced
   - พัฒนาการเน้นผลการค้นหาและการนำทางด้วยคีย์บอร์ด
   - รวม loading states และการจัดการข้อผิดพลาดที่เหมาะสม
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
-- [ ] 8.3 รวมการค้นหาเข้ากับหน้าแรก
+- [x] 8.3 รวมการค้นหาเข้ากับหน้าแรก
+
+
   - เพิ่ม SearchBar component ในหน้าแรกพร้อม client:load directive
   - พัฒนาการแสดงผลการค้นหาที่แทนที่หรือกรอง term grid
   - เพิ่มการจัดการ search state และการสนับสนุน URL parameter
   - _Requirements: 3.1, 3.2, 3.3, 3.5_
 
-- [ ] 9. พัฒนาระบบ theme
+- [x] 9. พัฒนาระบบ theme
+
   - สร้าง ThemeToggle component พร้อมการเปลี่ยน theme ฝั่ง client
   - เพิ่มการเก็บค่า theme preference ใน localStorage
   - พัฒนา Tailwind dark mode configuration และ CSS custom properties สำหรับตัวแปร theme สว่าง/มืด
@@ -90,6 +105,8 @@
   - _Requirements: 6.2_
 
 - [ ] 10. เพิ่มการปรับแต่ง SEO และ meta tag
+
+
   - พัฒนาการสร้าง meta tag ที่ครอบคลุมสำหรับทุกหน้า
   - เพิ่มการสนับสนุน Open Graph และ Twitter Card สำหรับการแชร์โซเชียล
   - สร้างการสร้าง sitemap.xml สำหรับการจัดทำดัชนีของ search engine

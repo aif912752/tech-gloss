@@ -1,0 +1,246 @@
+---
+title: "CI/CD"
+slug: "cicd"
+category: "DevOps"
+description: "Continuous Integration/Continuous Deployment - กระบวนการพัฒนาซอฟต์แวร์แบบต่อเนื่องและการ deploy อัตโนมัติ"
+related: ["git-rebase"]
+tags: ["devops", "automation", "deployment", "testing"]
+lastUpdated: 2024-01-15T00:00:00.000Z
+---
+
+# CI/CD (Continuous Integration/Continuous Deployment)
+
+CI/CD เป็นแนวปฏิบัติในการพัฒนาซอฟต์แวร์ที่ช่วยให้ทีมพัฒนาสามารถส่งมอบซอฟต์แวร์ได้อย่างรวดเร็ว มีคุณภาพ และเชื่อถือได้ โดยแบ่งออกเป็น 2 ส่วนหลัก:
+
+- **CI (Continuous Integration)**: การรวมโค้ดอย่างต่อเนื่อง
+- **CD (Continuous Deployment/Delivery)**: การ deploy หรือส่งมอบอย่างต่อเนื่อง
+
+## Continuous Integration (CI)
+
+CI เป็นแนวปฏิบัติที่นักพัฒนาจะรวมโค้ดของตนเข้ากับ main branch บ่อยๆ (อย่างน้อยวันละครั้ง) และมีการทดสอบอัตโนมัติเพื่อตรวจจับปัญหาได้เร็ว
+
+### หลักการของ CI
+
+1. **Commit บ่อยๆ**: นักพัฒนา commit โค้ดเข้า repository บ่อย
+2. **Build อัตโนมัติ**: ระบบ build โค้ดทุกครั้งที่มีการ commit
+3. **Test อัตโนมัติ**: รัน automated tests ทุกครั้งที่ build
+4. **Feedback รวดเร็ว**: แจ้งผลการ build และ test ทันที
+
+## Continuous Deployment/Delivery (CD)
+
+### Continuous Delivery
+การเตรียมโค้ดให้พร้อม deploy ได้ตลอดเวลา แต่การ deploy จริงยังต้องมีการอนุมัติจากมนุษย์
+
+### Continuous Deployment
+การ deploy โค้ดไปยัง production อัตโนมัติทันทีหลังจากผ่านการทดสอบทั้งหมด
+
+## ตัวอย่าง CI/CD Pipeline
+
+### GitHub Actions Workflow
+
+```yaml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        cache: 'npm'
+    
+    - name: Install dependencies
+      run: npm ci
+    
+    - name: Run tests
+      run: npm test
+    
+    - name: Run linting
+      run: npm run lint
+    
+    - name: Build application
+      run: npm run build
+
+  deploy:
+    needs: test
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Deploy to production
+      run: |
+        echo "Deploying to production..."
+        # Deploy commands here
+```
+
+### GitLab CI/CD Configuration
+
+```yaml
+# .gitlab-ci.yml
+stages:
+  - test
+  - build
+  - deploy
+
+variables:
+  NODE_VERSION: "18"
+
+test:
+  stage: test
+  image: node:$NODE_VERSION
+  script:
+    - npm ci
+    - npm run test
+    - npm run lint
+  coverage: '/Lines\s*:\s*(\d+\.\d+)%/'
+
+build:
+  stage: build
+  image: node:$NODE_VERSION
+  script:
+    - npm ci
+    - npm run build
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 1 hour
+
+deploy_staging:
+  stage: deploy
+  script:
+    - echo "Deploying to staging..."
+    - # Staging deployment commands
+  environment:
+    name: staging
+    url: https://staging.example.com
+  only:
+    - develop
+
+deploy_production:
+  stage: deploy
+  script:
+    - echo "Deploying to production..."
+    - # Production deployment commands
+  environment:
+    name: production
+    url: https://example.com
+  only:
+    - main
+  when: manual
+```
+
+### Jenkins Pipeline
+
+```groovy
+pipeline {
+    agent any
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                git 'https://github.com/username/project.git'
+            }
+        }
+        
+        stage('Install Dependencies') {
+            steps {
+                sh 'npm ci'
+            }
+        }
+        
+        stage('Test') {
+            steps {
+                sh 'npm test'
+                sh 'npm run lint'
+            }
+            post {
+                always {
+                    publishTestResults testResultsPattern: 'test-results.xml'
+                }
+            }
+        }
+        
+        stage('Build') {
+            steps {
+                sh 'npm run build'
+            }
+        }
+        
+        stage('Deploy') {
+            when {
+                branch 'main'
+            }
+            steps {
+                sh 'npm run deploy'
+            }
+        }
+    }
+    
+    post {
+        failure {
+            emailext (
+                subject: "Build Failed: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
+                body: "Build failed. Check console output at ${env.BUILD_URL}",
+                to: "${env.CHANGE_AUTHOR_EMAIL}"
+            )
+        }
+    }
+}
+```
+
+## เครื่องมือ CI/CD ยอดนิยม
+
+### Cloud-based CI/CD
+- **GitHub Actions**: รวมกับ GitHub repository
+- **GitLab CI/CD**: รวมกับ GitLab
+- **CircleCI**: รองรับหลายภาษาและ platform
+- **Travis CI**: เหมาะสำหรับ open source projects
+
+### Self-hosted CI/CD
+- **Jenkins**: เครื่องมือ CI/CD ที่ยืดหยุ่นและมี plugin มากมาย
+- **TeamCity**: จาก JetBrains
+- **Bamboo**: จาก Atlassian
+
+## ข้อดีของ CI/CD
+
+1. **ลดความเสี่ยง**: ตรวจจับปัญหาได้เร็วขึ้น
+2. **เพิ่มคุณภาพ**: การทดสอบอัตโนมัติอย่างสม่ำเสมอ
+3. **ส่งมอบเร็วขึ้น**: ลดเวลาในการ deploy
+4. **ลดงานซ้ำ**: อัตโนมัติงานที่ทำซ้ำๆ
+5. **เพิ่มความมั่นใจ**: มีการทดสอบครอบคลุม
+
+## แนวปฏิบัติที่ดี
+
+### สำหรับ CI
+1. **Commit เล็กๆ บ่อยๆ**
+2. **เขียน Test ที่ดี**
+3. **Build ให้เร็ว**
+4. **แก้ไข Build ที่พังทันที**
+
+### สำหรับ CD
+1. **Deploy ไปยัง Environment ที่คล้าย Production**
+2. **ใช้ Feature Flags**
+3. **มี Rollback Strategy**
+4. **Monitor หลัง Deploy**
+
+## การวัดผลสำเร็จ
+
+- **Build Success Rate**: อัตราความสำเร็จของ build
+- **Mean Time to Recovery (MTTR)**: เวลาเฉลี่ยในการแก้ไขปัญหา
+- **Deployment Frequency**: ความถี่ในการ deploy
+- **Lead Time**: เวลาจาก commit ถึง production
+
+CI/CD เป็นรากฐานสำคัญของ DevOps และช่วยให้ทีมพัฒนาสามารถส่งมอบซอฟต์แวร์ที่มีคุณภาพได้อย่างต่อเนื่อง

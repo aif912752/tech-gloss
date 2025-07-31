@@ -1,0 +1,33 @@
+---
+// Dynamic glossary term pages
+import { getCollection, getEntry } from 'astro:content';
+import GlossaryLayout from '../../layouts/GlossaryLayout.astro';
+import RelatedLinks from '../../components/RelatedLinks.astro';
+
+export async function getStaticPaths() {
+  const glossaryEntries = await getCollection('glossary');
+  
+  return glossaryEntries.map(entry => ({
+    params: { slug: entry.slug },
+    props: { entry },
+  }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await entry.render();
+
+// Get all terms for related links
+const allTerms = await getCollection('glossary');
+---
+
+<GlossaryLayout entry={entry} allTerms={allTerms}>
+  <!-- Main content -->
+  <Content />
+  
+  <!-- Related terms section -->
+  <RelatedLinks 
+    related={entry.data.related} 
+    allTerms={allTerms}
+    currentSlug={entry.slug}
+  />
+</GlossaryLayout>

@@ -1,14 +1,115 @@
 ---
-// ThemeToggle component - will be implemented in task 9
+// ThemeToggle.astro - Green Knowledge theme switcher
 ---
 
-<!-- Placeholder for ThemeToggle component -->
-<button class="theme-toggle">
-  🌙/☀️
+<button
+  id="theme-toggle"
+  class="relative p-2 rounded-lg bg-muted hover:bg-accent transition-colors focus-ring"
+  title="เปลี่ยนธีม"
+  aria-label="เปลี่ยนระหว่างโหมดสว่างและโหมดมืด"
+>
+  <svg id="sun-icon" class="w-5 h-5 text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
+  </svg>
+  <svg id="moon-icon" class="w-5 h-5 text-foreground absolute inset-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/>
+  </svg>
+  <svg id="loading-icon" class="w-5 h-5 text-foreground absolute inset-2 opacity-0 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
+  </svg>
 </button>
 
+<script>
+  (function () {
+    type Theme = "light" | "dark";
+
+    const html = document.documentElement;
+    const toggleBtn = document.getElementById("theme-toggle");
+    const sunIcon = document.getElementById("sun-icon");
+    const moonIcon = document.getElementById("moon-icon");
+    const loadingIcon = document.getElementById("loading-icon");
+
+    // ✅ ตรวจสอบว่าทุกไอคอนมีอยู่
+    if (!toggleBtn || !sunIcon || !moonIcon || !loadingIcon) {
+      console.warn("Theme toggle elements not found. Skipping initialization.");
+      return;
+    }
+
+    const getInitialTheme = (): Theme => {
+      const stored = localStorage.getItem("theme");
+      if (stored === "light" || stored === "dark") return stored;
+      return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+    };
+
+    const setTheme = (theme: Theme) => {
+      html.classList.toggle("dark", theme === "dark");
+      localStorage.setItem("theme", theme);
+      updateMetaColor(theme);
+      updateIcons(theme);
+    };
+
+    const updateMetaColor = (theme: Theme) => {
+      let meta = document.querySelector<HTMLMetaElement>('meta[name="theme-color"]');
+        if (!meta) {
+        meta = document.createElement("meta");
+        meta.name = "theme-color";
+        document.head.appendChild(meta);
+      }
+      meta.content = theme === "dark" ? "oklch(0.08 0.015 140)" : "oklch(0.98 0.01 120)";
+    };
+
+    const updateIcons = (theme: Theme) => {
+      loadingIcon.style.opacity = "0";
+      sunIcon.style.opacity = theme === "light" ? "1" : "0";
+      moonIcon.style.opacity = theme === "dark" ? "1" : "0";
+    };
+
+    const showLoading = () => {
+      sunIcon.style.opacity = "0";
+      moonIcon.style.opacity = "0";
+      loadingIcon.style.opacity = "1";
+    };
+
+    // ตั้งธีมเริ่มต้น
+    const currentTheme = getInitialTheme();
+    setTheme(currentTheme);
+
+    // จัดการการคลิก
+    toggleBtn.addEventListener("click", () => {
+      showLoading();
+      setTimeout(() => {
+        const newTheme: Theme = html.classList.contains("dark") ? "light" : "dark";
+        setTheme(newTheme);
+        window.dispatchEvent(new CustomEvent("themeChanged", { detail: { theme: newTheme } }));
+      }, 100);
+    });
+
+    // ตรวจจับการเปลี่ยนแปลงระบบ
+    window.matchMedia("(prefers-color-scheme: dark)")
+      .addEventListener("change", (e) => {
+        if (!localStorage.getItem("theme")) {
+          setTheme(e.matches ? "dark" : "light");
+        }
+      });
+  })();
+</script>
+
 <style>
-  .theme-toggle {
-    /* Styles will be implemented with Tailwind CSS in task 9 */
+  #theme-toggle svg {
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
   }
+  #sun-icon { opacity: 1; transform: rotate(0deg) scale(1); }
+  #moon-icon { opacity: 0; transform: rotate(-180deg) scale(0.8); }
+
+  html.dark #sun-icon { opacity: 0; transform: rotate(180deg) scale(0.8); }
+  html.dark #moon-icon { opacity: 1; transform: rotate(0deg) scale(1); }
+
+  #theme-toggle:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(34, 197, 94, 0.1);
+  }
+  #theme-toggle:focus {
+    box-shadow: 0 0 0 2px oklch(0.45 0.15 140);
+  }
+  #theme-toggle:active { transform: translateY(0); }
 </style>

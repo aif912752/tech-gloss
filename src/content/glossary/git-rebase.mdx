@@ -1,0 +1,250 @@
+---
+title: "Git Rebase"
+slug: "git-rebase"
+category: "Version Control"
+description: "คำสั่ง Git ที่ใช้เปลี่ยนฐานของ branch และจัดเรียง commit history ใหม่"
+related: ["cicd"]
+tags: ["git", "version-control", "workflow", "history"]
+lastUpdated: 2024-01-15T00:00:00.000Z
+---
+
+# Git Rebase
+
+Git Rebase เป็นคำสั่งที่ใช้เปลี่ยนฐาน (base) ของ branch และจัดเรียง commit history ใหม่ ทำให้ประวัติการ commit ดูเป็นเส้นตรงและเป็นระเบียบมากขึ้น แตกต่างจาก `git merge` ที่จะสร้าง merge commit
+
+## ความแตกต่างระหว่าง Merge และ Rebase
+
+### Git Merge
+```
+A---B---C feature
+    /         \
+D---E---F---G---H main
+```
+
+### Git Rebase
+```
+D---E---F---G---A'---B'---C' main
+```
+
+## การใช้งาน Git Rebase
+
+### Rebase พื้นฐาน
+
+```bash
+# สลับไป feature branch
+git checkout feature-branch
+
+# Rebase กับ main branch
+git rebase main
+
+# หรือทำในคำสั่งเดียว
+git rebase main feature-branch
+```
+
+### Interactive Rebase
+
+Interactive Rebase ช่วยให้เราสามารถแก้ไข commit history ได้อย่างละเอียด
+
+```bash
+# Rebase 3 commit ล่าสุด
+git rebase -i HEAD~3
+
+# Rebase ตั้งแต่ commit ที่กำหนด
+git rebase -i abc1234
+```
+
+เมื่อรัน interactive rebase จะเปิด editor ขึ้นมา:
+
+```
+pick f7f3f6d แก้ไข bug ในระบบ login
+pick 310154e เพิ่มฟีเจอร์ search
+pick a5f4a0d อัปเดต documentation
+
+# Commands:
+# p, pick = ใช้ commit นี้
+# r, reword = ใช้ commit แต่แก้ไข message
+# e, edit = ใช้ commit แต่หยุดเพื่อแก้ไข
+# s, squash = ใช้ commit แต่รวมกับ commit ก่อนหน้า
+# f, fixup = เหมือน squash แต่ไม่เอา commit message
+# x, exec = รันคำสั่ง shell
+# d, drop = ลบ commit นี้
+```
+
+## ตัวอย่างการใช้งาน Interactive Rebase
+
+### 1. การรวม Commits (Squash)
+
+```bash
+git rebase -i HEAD~3
+```
+
+เปลี่ยนจาก:
+```
+pick f7f3f6d แก้ไข typo
+pick 310154e แก้ไข typo อีกครั้ง
+pick a5f4a0d เพิ่มฟีเจอร์ใหม่
+```
+
+เป็น:
+```
+pick f7f3f6d แก้ไข typo
+squash 310154e แก้ไข typo อีกครั้ง
+pick a5f4a0d เพิ่มฟีเจอร์ใหม่
+```
+
+### 2. การแก้ไข Commit Message
+
+```bash
+git rebase -i HEAD~2
+```
+
+เปลี่ยน `pick` เป็น `reword`:
+```
+reword f7f3f6d แก้ไข bug ในระบบ login
+pick a5f4a0d เพิ่มฟีเจอร์ search
+```
+
+### 3. การจัดเรียง Commits ใหม่
+
+```bash
+git rebase -i HEAD~3
+```
+
+เปลี่ยนลำดับ:
+```
+pick a5f4a0d เพิ่มฟีเจอร์ search
+pick f7f3f6d แก้ไข bug ในระบบ login
+pick 310154e อัปเดต documentation
+```
+
+## การแก้ไข Conflicts ใน Rebase
+
+เมื่อเกิด conflict ระหว่าง rebase:
+
+```bash
+# 1. แก้ไข conflicts ในไฟล์
+# 2. เพิ่มไฟล์ที่แก้ไขแล้วเข้า staging
+git add .
+
+# 3. ดำเนินการ rebase ต่อ
+git rebase --continue
+
+# หรือยกเลิก rebase
+git rebase --abort
+
+# หรือข้าม commit ปัจจุบัน
+git rebase --skip
+```
+
+## Rebase Workflow ที่นิยม
+
+### Feature Branch Workflow
+
+```bash
+# 1. สร้าง feature branch
+git checkout -b feature/new-login
+git commit -m "เพิ่มหน้า login"
+git commit -m "เพิ่ม validation"
+
+# 2. อัปเดต main branch
+git checkout main
+git pull origin main
+
+# 3. Rebase feature branch
+git checkout feature/new-login
+git rebase main
+
+# 4. Push และสร้าง Pull Request
+git push origin feature/new-login
+```
+
+### การทำ Clean History ก่อน Merge
+
+```bash
+# รวม commits ที่เกี่ยวข้องกัน
+git rebase -i HEAD~5
+
+# ตัวอย่างการจัดระเบียบ:
+pick a1b2c3d เพิ่มฟีเจอร์ user authentication
+squash d4e5f6g แก้ไข typo ใน authentication
+squash g7h8i9j เพิ่ม unit tests สำหรับ auth
+pick j1k2l3m เพิ่มฟีเจอร์ password reset
+squash m4n5o6p แก้ไข bug ใน password reset
+```
+
+## การใช้ Rebase กับ Remote Repository
+
+### Push หลัง Rebase
+
+```bash
+# หลัง rebase ต้องใช้ force push (ระวัง!)
+git push --force-with-lease origin feature-branch
+
+# หรือ force push แบบปกติ (อันตราย!)
+git push -f origin feature-branch
+```
+
+### Pull Rebase
+
+```bash
+# Pull แบบ rebase แทน merge
+git pull --rebase origin main
+
+# ตั้งค่าให้ pull เป็น rebase เสมอ
+git config --global pull.rebase true
+```
+
+## ข้อดีของ Git Rebase
+
+1. **History ที่สะอาด**: ไม่มี merge commits ที่ไม่จำเป็น
+2. **เข้าใจง่าย**: commit history เป็นเส้นตรง
+3. **Bisect ง่าย**: หา bug ด้วย git bisect ได้ง่ายขึ้น
+4. **Review ง่าย**: Pull Request ดูง่ายขึ้น
+
+## ข้อเสียและข้อระวัง
+
+1. **เปลี่ยน History**: อันตรายถ้าใช้กับ commits ที่ push แล้ว
+2. **ซับซ้อนกว่า Merge**: ต้องเข้าใจการทำงานมากขึ้น
+3. **Conflicts ซับซ้อน**: อาจต้องแก้ conflict หลายครั้ง
+4. **สูญเสียบริบท**: ไม่เห็นว่าเมื่อไหร่ที่ merge เข้ามา
+
+## กฎทองของ Rebase
+
+**"ห้าม rebase commits ที่ push ไปยัง public repository แล้ว"**
+
+```bash
+# ❌ อันตราย - ถ้า commits นี้มีคนอื่นใช้แล้ว
+git rebase -i HEAD~5
+git push -f origin main
+
+# ✅ ปลอดภัย - ใช้กับ local commits หรือ feature branch ส่วนตัว
+git rebase -i HEAD~3
+git push --force-with-lease origin feature-branch
+```
+
+## เครื่องมือช่วย Rebase
+
+### Git Aliases
+
+```bash
+# ตั้งค่า aliases ที่มีประโยชน์
+git config --global alias.rb 'rebase'
+git config --global alias.rbi 'rebase -i'
+git config --global alias.rbc 'rebase --continue'
+git config --global alias.rba 'rebase --abort'
+```
+
+### GUI Tools
+- **GitKraken**: มี interactive rebase ที่ใช้ง่าย
+- **SourceTree**: รองรับ rebase แบบ visual
+- **VS Code**: มี extension สำหรับ Git rebase
+
+## แนวปฏิบัติที่ดี
+
+1. **ใช้กับ Feature Branches**: ไม่ใช่กับ main branch
+2. **Rebase ก่อน Push**: ทำให้ history สะอาดก่อน share
+3. **ใช้ --force-with-lease**: ปลอดภัยกว่า -f
+4. **Backup Branch**: สร้าง backup ก่อน rebase ที่ซับซ้อน
+5. **เข้าใจ Team Workflow**: ตกลงกับทีมว่าจะใช้ rebase หรือ merge
+
+Git Rebase เป็นเครื่องมือที่ทรงพลังสำหรับการจัดการ commit history แต่ต้องใช้อย่างระมัดระวังและเข้าใจผลกระทบที่อาจเกิดขึ้น

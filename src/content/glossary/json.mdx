@@ -1,0 +1,146 @@
+---
+title: "JSON"
+slug: "json"
+category: "Data Format"
+description: "JavaScript Object Notation - รูปแบบการแลกเปลี่ยนข้อมูลที่เบาและอ่านง่าย"
+related: ["api", "rest"]
+tags: ["data", "format", "javascript", "web"]
+lastUpdated: 2024-01-15T00:00:00.000Z
+---
+
+import CodeBlock from '../../components/CodeBlock.astro';
+
+# JSON (JavaScript Object Notation)
+
+JSON หรือ JavaScript Object Notation เป็นรูปแบบการแลกเปลี่ยนข้อมูลที่เบา อ่านง่าย และเขียนง่าย แม้ว่าจะมีชื่อว่า JavaScript Object Notation แต่ JSON เป็นรูปแบบที่ไม่ขึ้นกับภาษาโปรแกรม และสามารถใช้งานได้กับภาษาโปรแกรมส่วนใหญ่
+
+## โครงสร้างของ JSON
+
+JSON ประกอบด้วยคู่ของ name/value และมีโครงสร้างดังนี้:
+
+- **Object**: ล้อมรอบด้วย `{}` และประกอบด้วยคู่ key-value
+- **Array**: ล้อมรอบด้วย `[]` และประกอบด้วยรายการค่า
+- **String**: ล้อมรอบด้วย `""`
+- **Number**: ตัวเลขจำนวนเต็มหรือทศนิยม
+- **Boolean**: `true` หรือ `false`
+- **null**: ค่าว่าง
+
+## ตัวอย่างการใช้งาน
+
+### โครงสร้าง JSON พื้นฐาน
+
+<CodeBlock
+  code={`{
+  "name": "สมชาย ใจดี",
+  "age": 30,
+  "isActive": true,
+  "address": {
+    "street": "123 ถนนสุขุมวิท",
+    "city": "กรุงเทพฯ",
+    "zipCode": "10110"
+  },
+  "hobbies": ["อ่านหนังสือ", "เขียนโปรแกรม", "ฟังเพลง"],
+  "spouse": null
+}`}
+  language="json"
+  title="โครงสร้าง JSON พื้นฐาน"
+  showLineNumbers={true}
+/>
+
+### การทำงานกับ JSON ใน JavaScript
+
+```javascript
+// การแปลง Object เป็น JSON String
+const user = {
+  name: "Alice",
+  age: 25,
+  skills: ["JavaScript", "Python", "React"]
+};
+
+const jsonString = JSON.stringify(user);
+console.log(jsonString);
+// Output: {"name":"Alice","age":25,"skills":["JavaScript","Python","React"]}
+
+// การแปลง JSON String เป็น Object
+const jsonData = '{"name":"Bob","age":30,"city":"Bangkok"}';
+const userObject = JSON.parse(jsonData);
+console.log(userObject.name); // Output: Bob
+```
+
+### การใช้งาน JSON กับ API
+
+```javascript
+// ส่งข้อมูล JSON ไปยัง API
+const userData = {
+  username: "john_doe",
+  email: "john@example.com",
+  profile: {
+    firstName: "John",
+    lastName: "Doe"
+  }
+};
+
+fetch('/api/users', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify(userData)
+})
+.then(response => response.json())
+.then(data => {
+  console.log('Success:', data);
+});
+```
+
+### การทำงานกับ JSON ใน Python
+
+```python
+import json
+
+# การแปลง Dictionary เป็น JSON
+user_data = {
+    "name": "สมหญิง",
+    "age": 28,
+    "skills": ["Python", "Django", "PostgreSQL"]
+}
+
+json_string = json.dumps(user_data, ensure_ascii=False, indent=2)
+print(json_string)
+
+# การแปลง JSON เป็น Dictionary
+json_data = '{"name": "สมศักดิ์", "age": 35, "city": "เชียงใหม่"}'
+user_object = json.loads(json_data)
+print(user_object["name"])  # Output: สมศักดิ์
+```
+
+## ข้อดีของ JSON
+
+- **เบาและรวดเร็ว**: ขนาดไฟล์เล็กกว่า XML
+- **อ่านง่าย**: โครงสร้างที่เข้าใจง่ายสำหรับมนุษย์
+- **รองรับหลายภาษา**: ใช้งานได้กับภาษาโปรแกรมส่วนใหญ่
+- **เป็นมาตรฐาน**: เป็นรูปแบบมาตรฐานสำหรับ Web API
+
+## ข้อจำกัดของ JSON
+
+- **ไม่รองรับ Comments**: ไม่สามารถเขียนหมายเหตุใน JSON ได้
+- **ประเภทข้อมูลจำกัด**: รองรับเฉพาะประเภทข้อมูลพื้นฐาน
+- **ไม่รองรับ Functions**: ไม่สามารถเก็บฟังก์ชันได้
+- **ไม่รองรับ Date**: ต้องแปลงวันที่เป็น String
+
+## แนวปฏิบัติที่ดี
+
+1. **ใช้ชื่อ Key ที่มีความหมาย**
+2. **ตรวจสอบความถูกต้องของ JSON**
+3. **จัดการ Error ในการ Parse**
+4. **ใช้ Indentation สำหรับความอ่านง่าย**
+5. **หลีกเลี่ยงการซ้อน Object ลึกเกินไป**
+
+## เครื่องมือที่เป็นประโยชน์
+
+- **JSONLint**: ตรวจสอบความถูกต้องของ JSON
+- **JSON Formatter**: จัดรูปแบบ JSON ให้อ่านง่าย
+- **Postman**: ทดสอบ API ที่ใช้ JSON
+- **jq**: Command-line tool สำหรับประมวลผล JSON
+
+JSON เป็นส่วนสำคัญในการพัฒนา Web Application สมัยใหม่ และมักใช้ร่วมกับ API และ REST services

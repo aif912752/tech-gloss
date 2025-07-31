@@ -1,10 +1,10 @@
-import { defineCollection, z } from 'astro:content';
+import { defineCollection, z } from "astro:content";
 
 const glossary = defineCollection({
-  type: 'content',
+  type: "content",
   schema: z.object({
     title: z.string(),
-    slug: z.string(),
+    slug: z.string().optional(),
     category: z.string(),
     description: z.string(),
     related: z.array(z.string()).optional(),

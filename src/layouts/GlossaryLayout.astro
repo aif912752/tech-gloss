@@ -1,7 +1,8 @@
 ---
-// GlossaryLayout - Layout specific for glossary term pages
+// GlossaryLayout - Layout specific for glossary term pages with Green Knowledge theme
 import BaseLayout from './BaseLayout.astro';
 import type { CollectionEntry } from 'astro:content';
+import { generateTermMetaTitle, generateTermMetaDescription, generateKeywords } from '../utils/meta.ts';
 
 export interface Props {
   entry: CollectionEntry<'glossary'>;
@@ -9,53 +10,294 @@ export interface Props {
 }
 
 const { entry, allTerms } = Astro.props;
-const { title, description, category } = entry.data;
+const { title, description, category, tags, lastUpdated } = entry.data;
+
+// Generate optimized SEO data
+const metaTitle = generateTermMetaTitle(entry);
+const metaDescription = generateTermMetaDescription(entry);
+const keywords = generateKeywords(entry);
+const imageAlt = `${title} - คำศัพท์ทางเทคนิคในหมวด ${category}`;
 ---
 
-<BaseLayout title={`${title} - TechGloss`} description={description}>
-  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+<BaseLayout 
+  title={metaTitle} 
+  description={metaDescription}
+  type="article"
+  imageAlt={imageAlt}
+  modifiedTime={lastUpdated}
+  tags={keywords}
+  category={category}
+  entry={entry}
+  allTerms={allTerms}
+  structuredDataType="term"
+>
+  <div class="container-narrow">
     <!-- Breadcrumb Navigation -->
     <nav class="flex mb-8" aria-label="Breadcrumb">
       <ol class="inline-flex items-center space-x-1 md:space-x-3">
         <li class="inline-flex items-center">
-          <a href="/" class="inline-flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 dark:text-gray-400 dark:hover:text-white">
+          <a href="/" class="inline-flex items-center text-sm font-medium text-foreground/70 hover:text-primary transition-colors focus-ring rounded-sm px-1">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"/>
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v2H8V5z"/>
+            </svg>
             หน้าแรก
           </a>
         </li>
         <li>
           <div class="flex items-center">
-            <svg class="w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+            <svg class="w-3 h-3 text-muted-foreground mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
-            <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2 dark:text-gray-400">{category}</span>
+            <span class="text-sm font-medium text-muted-foreground">{category}</span>
           </div>
         </li>
         <li aria-current="page">
           <div class="flex items-center">
-            <svg class="w-3 h-3 text-gray-400 mx-1" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 6 10">
-              <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 9 4-4-4-4"/>
+            <svg class="w-3 h-3 text-muted-foreground mx-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
             </svg>
-            <span class="ml-1 text-sm font-medium text-gray-500 md:ml-2 dark:text-gray-400">{title}</span>
+            <span class="text-sm font-medium text-muted-foreground">{title}</span>
           </div>
         </li>
       </ol>
     </nav>
 
-    <!-- Term Content -->
-    <article class="prose prose-lg dark:prose-invert max-w-none">
-      <div class="mb-6">
-        <div class="flex items-center gap-3 mb-4">
-          <h1 class="text-4xl font-bold text-gray-900 dark:text-white mb-0">{title}</h1>
-          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-            {category}
-          </span>
+    <!-- Term Header -->
+    <header class="mb-8 pb-6 border-b border-border">
+      <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+        <div class="flex-1">
+          <div class="flex items-center gap-3 mb-3">
+            <h1 class="text-heading-1 text-primary mb-0">{title}</h1>
+            <span class="category-badge">
+              {category}
+            </span>
+          </div>
+          <p class="text-body-large text-muted-foreground leading-relaxed">{description}</p>
         </div>
-        <p class="text-xl text-gray-600 dark:text-gray-300">{description}</p>
+        
+        <!-- Action buttons -->
+        <div class="flex items-center gap-2 flex-shrink-0">
+          <button class="btn-secondary text-sm" onclick="navigator.share && navigator.share({title: document.title, url: window.location.href})">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"/>
+            </svg>
+            แชร์
+          </button>
+          <button class="btn-secondary text-sm" onclick="window.print()">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"/>
+            </svg>
+            พิมพ์
+          </button>
+        </div>
       </div>
-      
-      <div class="mt-8">
-        <slot />
-      </div>
-    </article>
+    </header>
+
+    <!-- Reading Progress Bar -->
+    <div class="fixed top-0 left-0 w-full h-1 bg-muted z-50">
+      <div id="reading-progress" class="h-full bg-primary transition-all duration-150 ease-out" style="width: 0%"></div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+      <!-- Table of Contents (Desktop) -->
+      <aside class="lg:col-span-1 order-2 lg:order-1">
+        <div class="sticky top-8">
+          <div class="bg-card border border-border rounded-lg p-4">
+            <h3 class="text-sm font-semibold text-foreground mb-3 flex items-center">
+              <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+              </svg>
+              สารบัญ
+            </h3>
+            <nav id="table-of-contents" class="space-y-1">
+              <!-- TOC will be populated by JavaScript -->
+            </nav>
+          </div>
+          
+          <!-- Quick Stats -->
+          <div class="bg-card border border-border rounded-lg p-4 mt-4">
+            <h3 class="text-sm font-semibold text-foreground mb-3">ข้อมูลเพิ่มเติม</h3>
+            <div class="space-y-2 text-sm text-muted-foreground">
+              <div class="flex justify-between">
+                <span>หมวดหมู่:</span>
+                <span class="text-foreground">{category}</span>
+              </div>
+              <div class="flex justify-between">
+                <span>เวลาอ่าน:</span>
+                <span class="text-foreground" id="reading-time">~5 นาที</span>
+              </div>
+              {entry.data.lastUpdated && (
+                <div class="flex justify-between">
+                  <span>อัปเดต:</span>
+                  <span class="text-foreground">{entry.data.lastUpdated.toLocaleDateString('th-TH')}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- Term Content -->
+      <article class="lg:col-span-3 order-1 lg:order-2 prose-green">
+        <div class="mt-8" id="main-content">
+          <slot />
+        </div>
+      </article>
+    </div>
+    
+    <!-- Back to glossary -->
+    <div class="mt-12 pt-8 border-t border-border">
+      <a href="/" class="inline-flex items-center text-primary hover:text-primary/80 transition-colors font-medium">
+        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+        </svg>
+        กลับไปหน้าแรก
+      </a>
+    </div>
   </div>
 </BaseLayout>
+<script is:inline>
+
+  // Table of Contents Generation
+  function generateTableOfContents() {
+    const content = document.getElementById('main-content');
+    const toc = document.getElementById('table-of-contents');
+    
+    if (!content || !toc) return;
+    
+    const headings = content.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    
+    if (headings.length === 0) {
+      toc.innerHTML = '<p class="text-xs text-muted-foreground">ไม่มีหัวข้อย่อย</p>';
+      return;
+    }
+    
+    const tocList = document.createElement('ul');
+    tocList.className = 'space-y-1';
+    
+    headings.forEach((heading, index) => {
+      // Create ID for heading if it doesn't exist
+      if (!heading.id) {
+        heading.id = `heading-${index}`;
+      }
+      
+      const level = parseInt(heading.tagName.charAt(1));
+      const listItem = document.createElement('li');
+      
+      const link = document.createElement('a');
+      link.href = `#${heading.id}`;
+      link.textContent = heading.textContent;
+      link.className = `block text-sm hover:text-primary transition-colors py-1 ${
+        level > 2 ? 'pl-4 text-muted-foreground' : 'text-foreground'
+      }`;
+      
+      // Smooth scroll behavior
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        
+        // Update URL without triggering scroll
+        history.pushState(null, null, `#${heading.id}`);
+      });
+      
+      listItem.appendChild(link);
+      tocList.appendChild(listItem);
+    });
+    
+    toc.appendChild(tocList);
+  }
+  
+  // Reading Progress Bar
+  function updateReadingProgress() {
+    const progressBar = document.getElementById('reading-progress');
+    if (!progressBar) return;
+    
+    const content = document.getElementById('main-content');
+    if (!content) return;
+    
+    const contentTop = content.offsetTop;
+    const contentHeight = content.offsetHeight;
+    const windowHeight = window.innerHeight;
+    const scrollTop = window.scrollY;
+    
+    const progress = Math.min(
+      Math.max((scrollTop - contentTop + windowHeight) / contentHeight, 0),
+      1
+    );
+    
+    progressBar.style.width = `${progress * 100}%`;
+  }
+  
+  // Estimate reading time
+  function calculateReadingTime() {
+    const content = document.getElementById('main-content');
+    const readingTimeElement = document.getElementById('reading-time');
+    
+    if (!content || !readingTimeElement) return;
+    
+    const text = content.textContent || '';
+    const wordsPerMinute = 200; // Average reading speed
+    const words = text.trim().split(/\s+/).length;
+    const minutes = Math.ceil(words / wordsPerMinute);
+    
+    readingTimeElement.textContent = `~${minutes} นาที`;
+  }
+  
+  // Highlight current section in TOC
+  function highlightCurrentSection() {
+    const headings = document.querySelectorAll('#main-content h1, #main-content h2, #main-content h3, #main-content h4, #main-content h5, #main-content h6');
+    const tocLinks = document.querySelectorAll('#table-of-contents a');
+    
+    let currentHeading = null;
+    
+    headings.forEach(heading => {
+      const rect = heading.getBoundingClientRect();
+      if (rect.top <= 100) {
+        currentHeading = heading;
+      }
+    });
+    
+    // Remove active class from all links
+    tocLinks.forEach(link => {
+      link.classList.remove('text-primary', 'font-medium');
+      link.classList.add('text-foreground');
+    });
+    
+    // Add active class to current section
+    if (currentHeading) {
+      const activeLink = document.querySelector(`#table-of-contents a[href="#${currentHeading.id}"]`);
+      if (activeLink) {
+        activeLink.classList.add('text-primary', 'font-medium');
+        activeLink.classList.remove('text-foreground');
+      }
+    }
+  }
+  
+  // Initialize when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    generateTableOfContents();
+    calculateReadingTime();
+    updateReadingProgress();
+    highlightCurrentSection();
+  });
+  
+  // Update on scroll
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        updateReadingProgress();
+        highlightCurrentSection();
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+  
+  // Handle window resize
+  window.addEventListener('resize', () => {
+    updateReadingProgress();
+  });
+</script>

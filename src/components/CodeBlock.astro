@@ -1,20 +1,251 @@
 ---
-// CodeBlock component - will be implemented in task 7
-export interface Props {
+// CodeBlock.astro - โค้ดบล็อกไฮไลต์พร้อมคัดลอก
+import { getHighlighterInstance } from "../lib/shiki";
+
+interface Props {
   code: string;
   language?: string;
+  showLineNumbers?: boolean;
+  title?: string;
+  filename?: string;
 }
 
-const { code, language = 'javascript' } = Astro.props;
+const {
+  code,
+  language = "javascript",
+  showLineNumbers = false,
+  title,
+  filename,
+} = Astro.props;
+
+const highlighter = await getHighlighterInstance();
+const lightHtml = highlighter.codeToHtml(code, {
+  lang: language,
+  theme: "github-light",
+});
+const darkHtml = highlighter.codeToHtml(code, {
+  lang: language,
+  theme: "night-owl",
+});
+const codeId = `code-${Math.random().toString(36).substr(2, 9)}`;
+const lineCount = code.split("\n").length;
 ---
 
-<!-- Placeholder for CodeBlock component -->
-<div class="code-block">
-  <pre><code>{code}</code></pre>
+<div
+  class="code-block-container group relative my-6 rounded-lg border bg-card shadow-sm"
+  data-line-numbers={showLineNumbers}
+>
+  <!-- Header -->
+  <div class="flex items-center justify-between bg-muted/50 px-4 py-3 border-b">
+    <div class="flex items-center gap-3">
+      <div class="flex gap-1.5">
+        <div class="w-2.5 h-2.5 rounded-full bg-destructive/80"></div>
+        <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
+        <div class="w-2.5 h-2.5 rounded-full bg-green-500/80"></div>
+      </div>
+      {
+        language && (
+          <span class="inline-flex rounded-md bg-primary/10 px-2 py-1 text-xs font-medium text-primary ring-1 ring-inset ring-primary/20">
+            {language}
+          </span>
+        )
+      }
+    </div>
+    {
+      (title || filename) && (
+        <span class="flex-1 text-sm font-medium text-muted-foreground font-mono text-center truncate">
+          {title || filename}
+        </span>
+      )
+    }
+    <button
+      class="copy-button inline-flex items-center justify-center h-8 w-8 rounded-md opacity-60 hover:opacity-100 hover:bg-accent transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+      data-code={code}
+      title="คัดลอกโค้ด"
+      aria-label="คัดลอกโค้ด"
+    >
+      <svg
+        class="copy-icon h-4 w-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+        <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+        ></path>
+      </svg>
+      <svg
+        class="check-icon hidden h-4 w-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path d="m9 12 2 2 4-4"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Code Content -->
+  <div class="relative">
+    {
+      showLineNumbers ? (
+        <div class="flex">
+          <div class="flex flex-col text-xs font-mono bg-muted/30 border-r border-border min-w-[3rem] px-3 text-right text-muted-foreground/70">
+            {Array.from({ length: lineCount }, (_, i) => (
+              <div class="line-number select-none hover:text-muted-foreground transition-colors">
+                {i + 1}
+              </div>
+            ))}
+          </div>
+          <div class="flex-1 overflow-hidden">
+            <div class="light-code block dark:hidden" set:html={lightHtml} />
+            <div class="dark-code hidden dark:block" set:html={darkHtml} />
+          </div>
+        </div>
+      ) : (
+        <>
+          <div class="light-code block dark:hidden" set:html={lightHtml} />
+          <div class="dark-code hidden dark:block" set:html={darkHtml} />
+        </>
+      )
+    }
+
+    <!-- Copy Feedback -->
+    <div
+      class="copy-feedback pointer-events-none absolute top-3 right-3 z-10 hidden"
+    >
+      <div
+        class="inline-flex items-center gap-1.5 rounded-md bg-primary px-2.5 py-1.5 text-xs font-medium text-primary-foreground shadow-lg animate-in"
+      >
+        <svg
+          class="h-3 w-3"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"><path d="m9 12 2 2 4-4"></path></svg
+        >
+        คัดลอกแล้ว!
+      </div>
+    </div>
+
+    <!-- No-JS Fallback -->
+    <noscript>
+      <pre
+        class="bg-muted p-4 text-sm font-mono text-muted-foreground overflow-x-auto"><code>{code}</code></pre>
+    </noscript>
+  </div>
 </div>
 
+<script>
+  document.addEventListener("click", async (e) => {
+    const btn =
+      e.target instanceof Element
+        ? e.target.closest<HTMLButtonElement>(".copy-button")
+        : null;
+    if (!btn) return;
+
+    const container = btn.closest(".code-block-container");
+    const code = btn.dataset.code;
+    const [copyIcon, checkIcon, feedback] = [
+      btn.querySelector(".copy-icon"),
+      btn.querySelector(".check-icon"),
+      container?.querySelector(".copy-feedback"),
+    ];
+
+    if (!code || !copyIcon || !checkIcon) return;
+
+    try {
+      await navigator.clipboard.writeText(code);
+    } catch {
+      const ta = Object.assign(document.createElement("textarea"), {
+        value: code,
+        style: "position:fixed;top:-9999px;left:-9999px;",
+      });
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand("copy");
+      document.body.removeChild(ta);
+    }
+
+    copyIcon.classList.add("hidden");
+    checkIcon.classList.remove("hidden");
+    feedback?.classList.remove("hidden");
+
+    setTimeout(() => {
+      copyIcon.classList.remove("hidden");
+      checkIcon.classList.add("hidden");
+      feedback?.classList.add("hidden");
+    }, 2000);
+  });
+</script>
+
 <style>
-  .code-block {
-    /* Styles and syntax highlighting will be implemented in task 7 */
+  .code-block-container .light-code :global(pre),
+  .code-block-container .dark-code :global(pre) {
+    margin: 0 !important;
+    padding: 1.5rem !important;
+    font-family: "JetBrains Mono", ui-monospace, monospace !important;
+    font-size: 0.875rem !important;
+    line-height: 1.7 !important;
+    background: hsl(var(--muted) / 0.1) !important;
+    overflow-x: auto !important;
+    border-radius: 0 !important;
+  }
+  .code-block-container[data-line-numbers="true"] .light-code :global(pre),
+  .code-block-container[data-line-numbers="true"] .dark-code :global(pre) {
+    padding-left: 1rem !important;
+  }
+
+  /* Override Shiki theme backgrounds to match Green Knowledge theme */
+  .code-block-container :global(pre) {
+    background: hsl(var(--muted) / 0.1) !important;
+  }
+
+  /* Ensure code tokens maintain readability with green background */
+  .code-block-container :global(.shiki) {
+    background: hsl(var(--muted) / 0.1) !important;
+  }
+  .line-number {
+    height: 1.495rem;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    font-size: 0.75rem;
+  }
+  .code-block-container:hover {
+    box-shadow:
+      0 10px 15px -3px rgb(0 0 0 / 0.1),
+      0 4px 6px -4px rgb(0 0 0 / 0.1);
+  }
+  .code-block-container :global(pre)::-webkit-scrollbar {
+    height: 6px;
+  }
+  .code-block-container :global(pre)::-webkit-scrollbar-track {
+    background: hsl(var(--muted) / 0.3);
+    border-radius: 3px;
+  }
+  .code-block-container :global(pre)::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 3px;
+    transition: 0.2s;
+  }
+  .code-block-container :global(pre)::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+  .copy-button:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+  @keyframes animate-in {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+  .animate-in {
+    animation: animate-in 0.2s ease-out;
   }
 </style>

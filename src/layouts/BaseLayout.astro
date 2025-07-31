@@ -1,71 +1,157 @@
 ---
 // BaseLayout - Base HTML structure for all pages
-import '../styles/global.css';
+import "../styles/global.css";
+import ThemeToggle from "../components/ThemeToggle.astro";
+import SEO from "../components/SEO.astro";
 
 export interface Props {
   title: string;
   description?: string;
-  ogImage?: string;
+  type?: 'website' | 'article';
+  image?: string;
+  imageAlt?: string;
+  publishedTime?: Date;
+  modifiedTime?: Date;
+  author?: string;
+  tags?: string[];
+  category?: string;
+  noindex?: boolean;
+  canonical?: string;
+  entry?: any;
+  allTerms?: any[];
+  structuredDataType?: 'website' | 'glossary' | 'term';
 }
 
-const { title, description = "TechGloss - Developer Glossary", ogImage } = Astro.props;
+const {
+  title,
+  description = "TechGloss - Developer Glossary",
+  type = 'website',
+  image,
+  imageAlt,
+  publishedTime,
+  modifiedTime,
+  author,
+  tags,
+  category,
+  noindex,
+  canonical,
+  entry,
+  allTerms,
+  structuredDataType = 'website',
+} = Astro.props;
 ---
 
-<!DOCTYPE html>
+<!doctype html>
 <html lang="th" class="h-full">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    
+
     <!-- SEO Meta Tags -->
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={Astro.url} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    {ogImage && <meta property="og:image" content={ogImage} />}
-    
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image" />
-    <meta property="twitter:url" content={Astro.url} />
-    <meta property="twitter:title" content={title} />
-    <meta property="twitter:description" content={description} />
-    {ogImage && <meta property="twitter:image" content={ogImage} />}
+    <SEO 
+      title={title}
+      description={description}
+      type={type}
+      image={image}
+      imageAlt={imageAlt}
+      publishedTime={publishedTime}
+      modifiedTime={modifiedTime}
+      author={author}
+      tags={tags}
+      category={category}
+      noindex={noindex}
+      canonical={canonical}
+      entry={entry}
+      allTerms={allTerms}
+      structuredDataType={structuredDataType}
+    />
+    <script is:inline>
+      const getTheme = () => {
+        if (
+          typeof localStorage !== "undefined" &&
+          localStorage.getItem("theme")
+        ) {
+          return localStorage.getItem("theme");
+        }
+        if (
+          window.matchMedia &&
+          window.matchMedia("(prefers-color-scheme: dark)").matches
+        ) {
+          return "dark";
+        }
+        return "light";
+      };
+      const theme = getTheme();
+      if (theme === "dark") document.documentElement.classList.add("dark");
+    </script>
   </head>
-  <body class="min-h-full bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  <body class="min-h-full bg-background text-foreground font-sans antialiased">
     <div class="min-h-full">
-      <header class="bg-white dark:bg-gray-800 shadow">
+      <header class="bg-card shadow-sm border-b border-border">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between items-center py-6">
-            <div class="flex items-center">
-              <a href="/" class="text-2xl font-bold text-blue-600 dark:text-blue-400">
+            <div class="flex items-center space-x-3">
+              <div
+                class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center"
+              >
+                <span class="text-primary-foreground font-bold text-lg">🌿</span
+                >
+              </div>
+              <a
+                href="/"
+                class="text-2xl font-bold text-primary hover:text-primary/80 transition-colors"
+              >
                 TechGloss
               </a>
+              <span
+                class="text-sm text-muted-foreground font-medium px-2 py-1 bg-accent/20 rounded-full"
+              >
+                Green Knowledge
+              </span>
             </div>
-            <nav class="flex items-center space-x-4">
-              <!-- Navigation will be enhanced in later tasks -->
-              <a href="/" class="text-gray-700 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400">
+            <nav class="flex items-center space-x-6">
+              <a
+                href="/"
+                class="text-foreground/80 hover:text-primary transition-colors font-medium"
+              >
                 หน้าแรก
               </a>
+              <a
+                href="/about"
+                class="text-foreground/80 hover:text-primary transition-colors font-medium"
+              >
+                เกี่ยวกับ
+              </a>
+              <ThemeToggle />
             </nav>
           </div>
         </div>
       </header>
-      
-      <main class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+
+      <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
         <slot />
       </main>
-      
-      <footer class="bg-gray-50 dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+
+      <footer class="bg-muted/30 border-t border-border mt-16">
         <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
-          <div class="text-center text-gray-500 dark:text-gray-400">
-            <p>&copy; 2024 TechGloss. สร้างด้วย Astro</p>
+          <div class="text-center">
+            <div class="flex items-center justify-center space-x-2 mb-4">
+              <div
+                class="w-6 h-6 bg-primary rounded flex items-center justify-center"
+              >
+                <span class="text-primary-foreground text-sm">🌿</span>
+              </div>
+              <span class="text-lg font-semibold text-primary">TechGloss</span>
+            </div>
+            <p class="text-muted-foreground text-sm">
+              &copy; 2024 TechGloss - Green Knowledge Theme. สร้างด้วย ❤️ และ
+              Astro
+            </p>
+            <p class="text-muted-foreground text-xs mt-2">
+              พจนานุกรมเทคนิคสำหรับนักพัฒนา | เรียนรู้ เข้าใจ พัฒนา
+            </p>
           </div>
         </div>
       </footer>

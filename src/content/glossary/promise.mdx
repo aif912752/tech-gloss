@@ -1,0 +1,313 @@
+---
+title: "Promise"
+slug: "promise"
+category: "JavaScript"
+description: "Object ใน JavaScript ที่ใช้จัดการกับ asynchronous operations และหลีกเลี่ยง callback hell"
+related: []
+tags: ["javascript", "async", "programming", "es6"]
+lastUpdated: 2024-01-15T00:00:00.000Z
+---
+
+import CodeBlock from '../../components/CodeBlock.astro';
+
+# Promise
+
+Promise เป็น Object ใน JavaScript ที่ใช้สำหรับจัดการกับ asynchronous operations (การทำงานแบบไม่ตรงเวลา) Promise ช่วยให้เราสามารถเขียนโค้ดที่อ่านง่ายขึ้นและหลีกเลี่ยงปัญหา "Callback Hell" ได้
+
+## สถานะของ Promise
+
+Promise มี 3 สถานะหลัก:
+
+1. **Pending**: สถานะเริ่มต้น กำลังรอผลลัพธ์
+2. **Fulfilled (Resolved)**: การทำงานสำเร็จ มีค่าผลลัพธ์
+3. **Rejected**: การทำงานล้มเหลว มี error
+
+## การสร้าง Promise
+
+### การสร้าง Promise พื้นฐาน
+
+<CodeBlock
+  code={`const myPromise = new Promise((resolve, reject) => {
+  // การทำงานแบบ asynchronous
+  const success = true;
+  
+  setTimeout(() => {
+    if (success) {
+      resolve("การทำงานสำเร็จ!");
+    } else {
+      reject("เกิดข้อผิดพลาด!");
+    }
+  }, 2000);
+});`}
+  language="javascript"
+  title="การสร้าง Promise พื้นฐาน"
+  showLineNumbers={true}
+/>
+
+### ตัวอย่างการใช้งานจริง
+
+```javascript
+// ฟังก์ชันที่ return Promise
+function fetchUserData(userId) {
+  return new Promise((resolve, reject) => {
+    // จำลองการเรียก API
+    setTimeout(() => {
+      if (userId > 0) {
+        resolve({
+          id: userId,
+          name: "สมชาย ใจดี",
+          email: "somchai@example.com"
+        });
+      } else {
+        reject(new Error("User ID ต้องมากกว่า 0"));
+      }
+    }, 1000);
+  });
+}
+
+// การใช้งาน Promise
+fetchUserData(123)
+  .then(user => {
+    console.log("ได้ข้อมูลผู้ใช้:", user);
+    return user.id; // ส่งต่อไปยัง then ถัดไป
+  })
+  .then(userId => {
+    console.log("User ID:", userId);
+  })
+  .catch(error => {
+    console.error("เกิดข้อผิดพลาด:", error.message);
+  })
+  .finally(() => {
+    console.log("การทำงานเสร็จสิ้น");
+  });
+```
+
+## การใช้งาน Promise Methods
+
+### Promise.then()
+ใช้สำหรับจัดการผลลัพธ์เมื่อ Promise สำเร็จ
+
+```javascript
+promise
+  .then(result => {
+    console.log("สำเร็จ:", result);
+    return result * 2; // ส่งต่อไปยัง then ถัดไป
+  })
+  .then(doubledResult => {
+    console.log("ผลลัพธ์คูณ 2:", doubledResult);
+  });
+```
+
+### Promise.catch()
+ใช้สำหรับจัดการ error เมื่อ Promise ล้มเหลว
+
+```javascript
+promise
+  .then(result => {
+    console.log("สำเร็จ:", result);
+  })
+  .catch(error => {
+    console.error("ล้มเหลว:", error);
+  });
+```
+
+### Promise.finally()
+ทำงานเสมอไม่ว่า Promise จะสำเร็จหรือล้มเหลว
+
+```javascript
+promise
+  .then(result => console.log("สำเร็จ:", result))
+  .catch(error => console.error("ล้มเหลว:", error))
+  .finally(() => console.log("ทำงานเสร็จแล้ว"));
+```
+
+## Promise Static Methods
+
+### Promise.all()
+รอให้ Promise ทั้งหมดสำเร็จ หรือหนึ่งใน Promise ล้มเหลว
+
+```javascript
+const promise1 = fetch('/api/users');
+const promise2 = fetch('/api/posts');
+const promise3 = fetch('/api/comments');
+
+Promise.all([promise1, promise2, promise3])
+  .then(responses => {
+    console.log("ทุก API เรียกสำเร็จ");
+    return Promise.all(responses.map(r => r.json()));
+  })
+  .then(data => {
+    const [users, posts, comments] = data;
+    console.log("ข้อมูลทั้งหมด:", { users, posts, comments });
+  })
+  .catch(error => {
+    console.error("มี API ล้มเหลว:", error);
+  });
+```
+
+### Promise.allSettled()
+รอให้ Promise ทั้งหมดเสร็จสิ้น ไม่ว่าจะสำเร็จหรือล้มเหลว
+
+```javascript
+const promises = [
+  fetch('/api/users'),
+  fetch('/api/invalid-endpoint'), // จะล้มเหลว
+  fetch('/api/posts')
+];
+
+Promise.allSettled(promises)
+  .then(results => {
+    results.forEach((result, index) => {
+      if (result.status === 'fulfilled') {
+        console.log(`Promise ${index} สำเร็จ:`, result.value);
+      } else {
+        console.log(`Promise ${index} ล้มเหลว:`, result.reason);
+      }
+    });
+  });
+```
+
+### Promise.race()
+ใช้ผลลัพธ์จาก Promise ตัวแรกที่เสร็จสิ้น
+
+```javascript
+const slowPromise = new Promise(resolve => 
+  setTimeout(() => resolve("ช้า"), 3000)
+);
+const fastPromise = new Promise(resolve => 
+  setTimeout(() => resolve("เร็ว"), 1000)
+);
+
+Promise.race([slowPromise, fastPromise])
+  .then(result => {
+    console.log("ผลลัพธ์แรก:", result); // "เร็ว"
+  });
+```
+
+### Promise.any()
+ใช้ผลลัพธ์จาก Promise ตัวแรกที่สำเร็จ
+
+```javascript
+const promises = [
+  Promise.reject("ล้มเหลว 1"),
+  Promise.resolve("สำเร็จ 1"),
+  Promise.resolve("สำเร็จ 2")
+];
+
+Promise.any(promises)
+  .then(result => {
+    console.log("Promise แรกที่สำเร็จ:", result); // "สำเร็จ 1"
+  })
+  .catch(error => {
+    console.log("ทุก Promise ล้มเหลว");
+  });
+```
+
+## การใช้งานกับ Async/Await
+
+Promise สามารถใช้ร่วมกับ async/await เพื่อให้โค้ดอ่านง่ายขึ้น
+
+```javascript
+// ใช้ Promise แบบเดิม
+function getUserWithPromise(userId) {
+  return fetchUserData(userId)
+    .then(user => {
+      console.log("ได้ข้อมูลผู้ใช้:", user);
+      return fetch(`/api/posts/${user.id}`);
+    })
+    .then(response => response.json())
+    .then(posts => {
+      console.log("ได้โพสต์:", posts);
+      return posts;
+    })
+    .catch(error => {
+      console.error("เกิดข้อผิดพลาด:", error);
+    });
+}
+
+// ใช้ async/await
+async function getUserWithAsync(userId) {
+  try {
+    const user = await fetchUserData(userId);
+    console.log("ได้ข้อมูลผู้ใช้:", user);
+    
+    const response = await fetch(`/api/posts/${user.id}`);
+    const posts = await response.json();
+    console.log("ได้โพสต์:", posts);
+    
+    return posts;
+  } catch (error) {
+    console.error("เกิดข้อผิดพลาด:", error);
+  }
+}
+```
+
+## ตัวอย่างการใช้งานจริง
+
+### การเรียก API หลายตัวตามลำดับ
+
+```javascript
+async function loadUserProfile(userId) {
+  try {
+    // เรียกข้อมูลผู้ใช้
+    const user = await fetch(`/api/users/${userId}`).then(r => r.json());
+    
+    // เรียกข้อมูลโปรไฟล์
+    const profile = await fetch(`/api/profiles/${user.profileId}`).then(r => r.json());
+    
+    // เรียกข้อมูลการตั้งค่า
+    const settings = await fetch(`/api/settings/${userId}`).then(r => r.json());
+    
+    return {
+      user,
+      profile,
+      settings
+    };
+  } catch (error) {
+    console.error("ไม่สามารถโหลดข้อมูลได้:", error);
+    throw error;
+  }
+}
+```
+
+### การจัดการ Timeout
+
+```javascript
+function withTimeout(promise, timeoutMs) {
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => 
+      setTimeout(() => reject(new Error("Timeout")), timeoutMs)
+    )
+  ]);
+}
+
+// การใช้งาน
+withTimeout(fetch('/api/slow-endpoint'), 5000)
+  .then(response => response.json())
+  .then(data => console.log("ได้ข้อมูล:", data))
+  .catch(error => {
+    if (error.message === "Timeout") {
+      console.error("การเรียก API ใช้เวลานานเกินไป");
+    } else {
+      console.error("เกิดข้อผิดพลาด:", error);
+    }
+  });
+```
+
+## ข้อดีของ Promise
+
+1. **หลีกเลี่ยง Callback Hell**: โค้ดอ่านง่ายขึ้น
+2. **Error Handling ที่ดีขึ้น**: ใช้ .catch() จัดการ error ได้ง่าย
+3. **Chainable**: สามารถต่อ .then() ได้หลายตัว
+4. **รองรับ async/await**: ทำให้โค้ดดูเหมือน synchronous
+
+## แนวปฏิบัติที่ดี
+
+1. **ใช้ async/await แทน .then() เมื่อเป็นไปได้**
+2. **จัดการ error ด้วย try/catch หรือ .catch()**
+3. **หลีกเลี่ยงการสร้าง Promise ที่ไม่จำเป็น**
+4. **ใช้ Promise.all() เมื่อต้องการรอหลาย Promise**
+5. **ระวังการ return ค่าใน .then()**
+
+Promise เป็นพื้นฐานสำคัญในการเขียน JavaScript สมัยใหม่ และเป็นรากฐานของ async/await ที่ใช้กันอย่างแพร่หลายในปัจจุบัน

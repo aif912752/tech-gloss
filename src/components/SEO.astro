@@ -1,0 +1,156 @@
+---
+// SEO Component - Comprehensive meta tags and structured data
+import StructuredData from "./StructuredData.astro";
+import type { CollectionEntry } from "astro:content";
+import { seoConfig, getFullUrl, getImageUrl } from "../config/seo.ts";
+
+export interface Props {
+  title: string;
+  description: string;
+  type?: "website" | "article";
+  image?: string;
+  imageAlt?: string;
+  url?: string;
+  publishedTime?: Date;
+  modifiedTime?: Date;
+  author?: string;
+  tags?: string[];
+  category?: string;
+  noindex?: boolean;
+  canonical?: string;
+  entry?: CollectionEntry<"glossary">;
+  allTerms?: CollectionEntry<"glossary">[];
+  structuredDataType?: "website" | "glossary" | "term";
+}
+
+const {
+  title,
+  description,
+  type = "website",
+  image,
+  imageAlt,
+  url = Astro.url.href,
+  publishedTime,
+  modifiedTime,
+  author = "TechGloss",
+  tags = [],
+  category,
+  noindex = false,
+  canonical,
+  entry,
+  allTerms,
+  structuredDataType = "website",
+} = Astro.props;
+
+// Construct full URLs using configuration
+const fullUrl = url.startsWith("http") ? url : getFullUrl(url);
+const fullImage = image
+  ? getImageUrl(image)
+  : getImageUrl(seoConfig.defaultOGImage);
+const canonicalUrl = canonical || fullUrl;
+---
+
+<!-- Basic Meta Tags -->
+<title>{title}</title>
+<meta name="description" content={description} />
+<link rel="canonical" href={canonicalUrl} />
+
+<!-- Robots -->
+{noindex && <meta name="robots" content="noindex, nofollow" />}
+
+<!-- Open Graph / Facebook -->
+<meta property="og:type" content={type} />
+<meta property="og:site_name" content={seoConfig.siteName} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:url" content={fullUrl} />
+<meta property="og:image" content={fullImage} />
+{imageAlt && <meta property="og:image:alt" content={imageAlt} />}
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:locale" content={seoConfig.locale} />
+{
+  seoConfig.facebookAppId && (
+    <meta property="fb:app_id" content={seoConfig.facebookAppId} />
+  )
+}
+
+{
+  type === "article" && (
+    <>
+      {publishedTime && (
+        <meta
+          property="article:published_time"
+          content={publishedTime.toISOString()}
+        />
+      )}
+      {modifiedTime && (
+        <meta
+          property="article:modified_time"
+          content={modifiedTime.toISOString()}
+        />
+      )}
+      {author && <meta property="article:author" content={author} />}
+      {category && <meta property="article:section" content={category} />}
+      {tags.map((tag) => (
+        <meta property="article:tag" content={tag} />
+      ))}
+    </>
+  )
+}
+
+<!-- Twitter Card -->
+<meta name="twitter:card" content="summary_large_image" />
+{
+  seoConfig.twitterHandle && (
+    <meta name="twitter:site" content={seoConfig.twitterHandle} />
+  )
+}
+{
+  seoConfig.twitterHandle && (
+    <meta name="twitter:creator" content={seoConfig.twitterHandle} />
+  )
+}
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={fullImage} />
+{imageAlt && <meta name="twitter:image:alt" content={imageAlt} />}
+
+<!-- Additional Meta Tags -->
+<meta name="theme-color" content="#22c55e" />
+<meta name="msapplication-TileColor" content="#22c55e" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content={seoConfig.siteName} />
+
+<!-- Language and Region -->
+<meta name="language" content="th" />
+<meta name="geo.region" content="TH" />
+<meta name="geo.country" content="Thailand" />
+
+<!-- Keywords (if tags provided) -->
+{tags.length > 0 && <meta name="keywords" content={tags.join(", ")} />}
+
+<!-- Structured Data -->
+<StructuredData type={structuredDataType} entry={entry} allTerms={allTerms} />
+
+<!-- Preconnect to external domains -->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+<!-- RSS Feed Discovery -->
+<link
+  rel="alternate"
+  type="application/rss+xml"
+  title={`${seoConfig.siteName} RSS Feed`}
+  href="/rss.xml"
+/>
+
+<!-- Sitemap -->
+<link
+  rel="sitemap"
+  type="application/xml"
+  title="Sitemap"
+  href="/sitemap.xml"
+/>

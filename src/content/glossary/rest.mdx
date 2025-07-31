@@ -1,0 +1,424 @@
+---
+title: "REST"
+slug: "rest"
+category: "Web Development"
+description: "Representational State Transfer - สถาปัตยกรรมสำหรับการออกแบบ web services ที่ใช้ HTTP methods"
+related: ["api", "json"]
+tags: ["web", "api", "http", "architecture"]
+lastUpdated: 2024-01-15T00:00:00.000Z
+---
+
+# REST (Representational State Transfer)
+
+REST หรือ Representational State Transfer เป็นสถาปัตยกรรม (architectural style) สำหรับการออกแบบ web services ที่ใช้หลักการของ HTTP protocol REST API เป็นรูปแบบที่นิยมมากที่สุดในการสร้าง web services ในปัจจุบัน
+
+## หลักการของ REST
+
+### 1. Client-Server Architecture
+แยกการทำงานระหว่าง client และ server อย่างชัดเจน
+
+### 2. Stateless
+Server ไม่เก็บสถานะของ client ระหว่างการเรียกใช้
+
+### 3. Cacheable
+Response สามารถ cache ได้เพื่อเพิ่มประสิทธิภาพ
+
+### 4. Uniform Interface
+ใช้ interface ที่เป็นมาตรฐานเดียวกัน
+
+### 5. Layered System
+สามารถมี layer กลางได้ เช่น proxy, gateway
+
+### 6. Code on Demand (Optional)
+Server สามารถส่ง code ให้ client ทำงานได้
+
+## HTTP Methods ใน REST
+
+### GET - อ่านข้อมูล
+```http
+GET /api/users
+GET /api/users/123
+GET /api/users/123/posts
+```
+
+### POST - สร้างข้อมูลใหม่
+```http
+POST /api/users
+Content-Type: application/json
+
+{
+  "name": "สมชาย ใจดี",
+  "email": "somchai@example.com"
+}
+```
+
+### PUT - อัปเดตข้อมูลทั้งหมด
+```http
+PUT /api/users/123
+Content-Type: application/json
+
+{
+  "name": "สมชาย ใจดี",
+  "email": "somchai.new@example.com",
+  "age": 30
+}
+```
+
+### PATCH - อัปเดตข้อมูลบางส่วน
+```http
+PATCH /api/users/123
+Content-Type: application/json
+
+{
+  "email": "somchai.updated@example.com"
+}
+```
+
+### DELETE - ลบข้อมูล
+```http
+DELETE /api/users/123
+```
+
+## HTTP Status Codes
+
+### 2xx Success
+- **200 OK**: สำเร็จ
+- **201 Created**: สร้างข้อมูลสำเร็จ
+- **204 No Content**: สำเร็จแต่ไม่มีข้อมูลส่งกลับ
+
+### 4xx Client Error
+- **400 Bad Request**: ข้อมูลที่ส่งมาไม่ถูกต้อง
+- **401 Unauthorized**: ไม่ได้รับอนุญาต
+- **403 Forbidden**: ห้ามเข้าถึง
+- **404 Not Found**: ไม่พบข้อมูล
+- **409 Conflict**: ข้อมูลขัดแย้ง
+
+### 5xx Server Error
+- **500 Internal Server Error**: ข้อผิดพลาดของ server
+- **502 Bad Gateway**: Gateway ผิดพลาด
+- **503 Service Unavailable**: บริการไม่พร้อมใช้งาน
+
+## ตัวอย่าง REST API
+
+### Node.js + Express
+
+```javascript
+const express = require('express');
+const app = express();
+
+app.use(express.json());
+
+// ข้อมูลจำลอง
+let users = [
+  { id: 1, name: 'สมชาย', email: 'somchai@example.com' },
+  { id: 2, name: 'สมหญิง', email: 'somying@example.com' }
+];
+
+// GET /api/users - ดึงข้อมูลผู้ใช้ทั้งหมด
+app.get('/api/users', (req, res) => {
+  res.json({
+    success: true,
+    data: users,
+    total: users.length
+  });
+});
+
+// GET /api/users/:id - ดึงข้อมูลผู้ใช้ตาม ID
+app.get('/api/users/:id', (req, res) => {
+  const userId = parseInt(req.params.id);
+  const user = users.find(u => u.id === userId);
+  
+  if (!user) {
+    return res.status(404).json({
+      success: false,
+      message: 'ไม่พบผู้ใช้'
+    });
+  }
+  
+  res.json({
+    success: true,
+    data: user
+  });
+});
+
+// POST /api/users - สร้างผู้ใช้ใหม่
+app.post('/api/users', (req, res) => {
+  const { name, email } = req.body;
+  
+  if (!name || !email) {
+    return res.status(400).json({
+      success: false,
+      message: 'กรุณาระบุชื่อและอีเมล'
+    });
+  }
+  
+  const newUser = {
+    id: users.length + 1,
+    name,
+    email
+  };
+  
+  users.push(newUser);
+  
+  res.status(201).json({
+    success: true,
+    data: newUser,
+    message: 'สร้างผู้ใช้สำเร็จ'
+  });
+});
+
+// PUT /api/users/:id - อัปเดตผู้ใช้
+app.put('/api/users/:id', (req, res) => {
+  const userId = parseInt(req.params.id);
+  const userIndex = users.findIndex(u => u.id === userId);
+  
+  if (userIndex === -1) {
+    return res.status(404).json({
+      success: false,
+      message: 'ไม่พบผู้ใช้'
+    });
+  }
+  
+  const { name, email } = req.body;
+  users[userIndex] = { id: userId, name, email };
+  
+  res.json({
+    success: true,
+    data: users[userIndex],
+    message: 'อัปเดตผู้ใช้สำเร็จ'
+  });
+});
+
+// DELETE /api/users/:id - ลบผู้ใช้
+app.delete('/api/users/:id', (req, res) => {
+  const userId = parseInt(req.params.id);
+  const userIndex = users.findIndex(u => u.id === userId);
+  
+  if (userIndex === -1) {
+    return res.status(404).json({
+      success: false,
+      message: 'ไม่พบผู้ใช้'
+    });
+  }
+  
+  users.splice(userIndex, 1);
+  
+  res.status(204).send();
+});
+
+app.listen(3000, () => {
+  console.log('Server running on port 3000');
+});
+```
+
+### Python + FastAPI
+
+```python
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from typing import List, Optional
+
+app = FastAPI()
+
+# Models
+class User(BaseModel):
+    id: Optional[int] = None
+    name: str
+    email: str
+
+class UserUpdate(BaseModel):
+    name: Optional[str] = None
+    email: Optional[str] = None
+
+# ข้อมูลจำลอง
+users = [
+    {"id": 1, "name": "สมชาย", "email": "somchai@example.com"},
+    {"id": 2, "name": "สมหญิง", "email": "somying@example.com"}
+]
+
+@app.get("/api/users", response_model=List[User])
+async def get_users():
+    return users
+
+@app.get("/api/users/{user_id}", response_model=User)
+async def get_user(user_id: int):
+    user = next((u for u in users if u["id"] == user_id), None)
+    if not user:
+        raise HTTPException(status_code=404, detail="ไม่พบผู้ใช้")
+    return user
+
+@app.post("/api/users", response_model=User, status_code=201)
+async def create_user(user: User):
+    new_id = max([u["id"] for u in users]) + 1 if users else 1
+    new_user = {"id": new_id, "name": user.name, "email": user.email}
+    users.append(new_user)
+    return new_user
+
+@app.put("/api/users/{user_id}", response_model=User)
+async def update_user(user_id: int, user: User):
+    user_index = next((i for i, u in enumerate(users) if u["id"] == user_id), None)
+    if user_index is None:
+        raise HTTPException(status_code=404, detail="ไม่พบผู้ใช้")
+    
+    users[user_index] = {"id": user_id, "name": user.name, "email": user.email}
+    return users[user_index]
+
+@app.delete("/api/users/{user_id}", status_code=204)
+async def delete_user(user_id: int):
+    user_index = next((i for i, u in enumerate(users) if u["id"] == user_id), None)
+    if user_index is None:
+        raise HTTPException(status_code=404, detail="ไม่พบผู้ใช้")
+    
+    users.pop(user_index)
+    return None
+```
+
+## การออกแบบ URL ที่ดี
+
+### ใช้ Nouns ไม่ใช่ Verbs
+```
+✅ GET /api/users
+❌ GET /api/getUsers
+
+✅ POST /api/users
+❌ POST /api/createUser
+```
+
+### ใช้ Plural Nouns
+```
+✅ GET /api/users
+❌ GET /api/user
+
+✅ GET /api/posts
+❌ GET /api/post
+```
+
+### Nested Resources
+```
+GET /api/users/123/posts        # โพสต์ของผู้ใช้ 123
+GET /api/posts/456/comments     # คอมเมนต์ของโพสต์ 456
+```
+
+### Query Parameters สำหรับ Filtering
+```
+GET /api/users?page=2&limit=10
+GET /api/posts?category=tech&sort=date
+GET /api/products?min_price=100&max_price=500
+```
+
+## การจัดการ Authentication
+
+### JWT Token
+```javascript
+// Middleware สำหรับตรวจสอบ token
+const authenticateToken = (req, res, next) => {
+  const authHeader = req.headers['authorization'];
+  const token = authHeader && authHeader.split(' ')[1];
+  
+  if (!token) {
+    return res.status(401).json({ message: 'ไม่มี token' });
+  }
+  
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      return res.status(403).json({ message: 'Token ไม่ถูกต้อง' });
+    }
+    req.user = user;
+    next();
+  });
+};
+
+// ใช้ middleware
+app.get('/api/protected', authenticateToken, (req, res) => {
+  res.json({ message: 'ข้อมูลที่ต้องการ authentication', user: req.user });
+});
+```
+
+## การจัดการ Error
+
+### Error Response Format
+```json
+{
+  "success": false,
+  "error": {
+    "code": "VALIDATION_ERROR",
+    "message": "ข้อมูลไม่ถูกต้อง",
+    "details": [
+      {
+        "field": "email",
+        "message": "รูปแบบอีเมลไม่ถูกต้อง"
+      }
+    ]
+  }
+}
+```
+
+### Global Error Handler
+```javascript
+app.use((error, req, res, next) => {
+  console.error(error.stack);
+  
+  res.status(error.status || 500).json({
+    success: false,
+    error: {
+      message: error.message || 'เกิดข้อผิดพลาดภายในเซิร์ฟเวอร์',
+      ...(process.env.NODE_ENV === 'development' && { stack: error.stack })
+    }
+  });
+});
+```
+
+## การทดสอบ REST API
+
+### ด้วย curl
+```bash
+# GET request
+curl -X GET "http://localhost:3000/api/users"
+
+# POST request
+curl -X POST "http://localhost:3000/api/users" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"ทดสอบ","email":"test@example.com"}'
+
+# PUT request
+curl -X PUT "http://localhost:3000/api/users/1" \
+  -H "Content-Type: application/json" \
+  -d '{"name":"อัปเดต","email":"updated@example.com"}'
+
+# DELETE request
+curl -X DELETE "http://localhost:3000/api/users/1"
+```
+
+### ด้วย JavaScript
+```javascript
+// GET
+const response = await fetch('/api/users');
+const users = await response.json();
+
+// POST
+const newUser = await fetch('/api/users', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    name: 'ผู้ใช้ใหม่',
+    email: 'newuser@example.com'
+  })
+});
+```
+
+## แนวปฏิบัติที่ดี
+
+1. **ใช้ HTTP Methods อย่างถูกต้อง**
+2. **ส่ง HTTP Status Codes ที่เหมาะสม**
+3. **ใช้ JSON สำหรับ Request/Response**
+4. **จัดการ Error อย่างสม่ำเสมอ**
+5. **ใช้ HTTPS ใน Production**
+6. **ทำ API Versioning**
+7. **เขียน API Documentation**
+8. **ใช้ Rate Limiting**
+9. **ทำ Input Validation**
+10. **Log การเข้าถึง API**
+
+REST API เป็นมาตรฐานที่สำคัญในการพัฒนา web services และเป็นพื้นฐานของการสื่อสารระหว่าง client และ server ในยุคปัจจุบัน

@@ -1,0 +1,107 @@
+---
+title: "API"
+slug: "api"
+category: "Web Development"
+description: "Application Programming Interface - ชุดของกฎเกณฑ์และเครื่องมือสำหรับการสร้างแอปพลิเคชันซอฟต์แวร์"
+related: ["rest", "json"]
+tags: ["web", "backend", "integration", "interface"]
+lastUpdated: 2024-01-15T00:00:00.000Z
+---
+
+import CodeBlock from '../../components/CodeBlock.astro';
+
+export const javascriptCode = `// GET request
+fetch('https://api.example.com/users')
+  .then(response => response.json())
+  .then(data => {
+    console.log('Users:', data);
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+
+// POST request
+fetch('https://api.example.com/users', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({
+    name: 'John Doe',
+    email: 'john@example.com'
+  })
+})
+.then(response => response.json())
+.then(data => {
+  console.log('Created user:', data);
+});`;
+
+export const pythonCode = `import requests
+
+# GET request
+response = requests.get('https://api.example.com/users')
+users = response.json()
+print(f"Found {len(users)} users")
+
+# POST request
+new_user = {
+    'name': 'Jane Smith',
+    'email': 'jane@example.com'
+}
+response = requests.post('https://api.example.com/users', json=new_user)
+created_user = response.json()
+print(f"Created user: {created_user['name']}")`;
+
+# API (Application Programming Interface)
+
+API หรือ Application Programming Interface คือชุดของกฎเกณฑ์ โปรโตคอล และเครื่องมือที่กำหนดวิธีการที่ส่วนประกอบซอฟต์แวร์ต่างๆ สามารถสื่อสารและทำงานร่วมกันได้ API ทำหน้าที่เป็นสะพานเชื่อมระหว่างแอปพลิเคชันต่างๆ ให้สามารถแลกเปลี่ยนข้อมูลและฟังก์ชันการทำงานได้
+
+## ประเภทของ API
+
+### REST API
+API ที่ใช้หลักการ REST (Representational State Transfer) เป็นรูปแบบที่นิยมมากที่สุดในปัจจุบัน
+
+### GraphQL API
+API ที่ให้ความยืดหยุ่นในการขอข้อมูลเฉพาะที่ต้องการ
+
+### WebSocket API
+API สำหรับการสื่อสารแบบ real-time
+
+## ตัวอย่างการใช้งาน
+
+### การเรียกใช้ REST API ด้วย JavaScript
+
+<CodeBlock
+  code={javascriptCode}
+  language="javascript"
+  title="การเรียกใช้ REST API"
+  showLineNumbers={true}
+/>
+
+### การใช้งาน API ด้วย Python
+
+<CodeBlock
+  code={pythonCode}
+  language="python"
+  title="การใช้งาน API ด้วย Python"
+  showLineNumbers={true}
+/>
+
+## ข้อดีของการใช้ API
+
+- **การแยกส่วน (Separation of Concerns)**: แยกการทำงานของ frontend และ backend
+- **การใช้งานซ้ำ (Reusability)**: API เดียวสามารถใช้งานได้หลายแอปพลิเคชัน
+- **ความยืดหยุ่น**: สามารถเปลี่ยนแปลงการทำงานภายในได้โดยไม่กระทบผู้ใช้
+- **การทำงานร่วมกัน**: ช่วยให้ทีมต่างๆ ทำงานแยกกันได้
+
+## แนวปฏิบัติที่ดี
+
+1. **ใช้ HTTP Status Codes ที่เหมาะสม**
+2. **จัดการ Error Handling อย่างชัดเจน**
+3. **ใช้ Authentication และ Authorization**
+4. **จำกัด Rate Limiting**
+5. **เขียน Documentation ที่ดี**
+
+## แนวคิดที่เกี่ยวข้อง
+
+API เป็นแนวคิดพื้นฐานที่เชื่อมโยงกับหลายเทคโนโลยี เช่น REST, JSON สำหรับการแลกเปลี่ยนข้อมูล และ CI/CD สำหรับการ deploy API อย่างต่อเนื่อง
