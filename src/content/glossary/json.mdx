@@ -7,7 +7,6 @@ related: ["api", "rest"]
 tags: ["data", "format", "javascript", "web"]
 lastUpdated: 2024-01-15T00:00:00.000Z
 ---
-
 import CodeBlock from '../../components/CodeBlock.astro';
 
 # JSON (JavaScript Object Notation)
@@ -39,7 +38,11 @@ JSON ประกอบด้วยคู่ของ name/value และมี
     "city": "กรุงเทพฯ",
     "zipCode": "10110"
   },
-  "hobbies": ["อ่านหนังสือ", "เขียนโปรแกรม", "ฟังเพลง"],
+  "hobbies": [
+    "อ่านหนังสือ", 
+    "เขียนโปรแกรม", 
+    "ฟังเพลง"
+  ],
   "spouse": null
 }`}
   language="json"
@@ -49,8 +52,8 @@ JSON ประกอบด้วยคู่ของ name/value และมี
 
 ### การทำงานกับ JSON ใน JavaScript
 
-```javascript
-// การแปลง Object เป็น JSON String
+<CodeBlock
+  code={`// การแปลง Object เป็น JSON String
 const user = {
   name: "Alice",
   age: 25,
@@ -64,13 +67,16 @@ console.log(jsonString);
 // การแปลง JSON String เป็น Object
 const jsonData = '{"name":"Bob","age":30,"city":"Bangkok"}';
 const userObject = JSON.parse(jsonData);
-console.log(userObject.name); // Output: Bob
-```
+console.log(userObject.name); // Output: Bob`}
+  language="javascript"
+  title="การใช้งาน JSON.stringify() และ JSON.parse()"
+  showLineNumbers={true}
+/>
 
 ### การใช้งาน JSON กับ API
 
-```javascript
-// ส่งข้อมูล JSON ไปยัง API
+<CodeBlock
+  code={`// ส่งข้อมูล JSON ไปยัง API
 const userData = {
   username: "john_doe",
   email: "john@example.com",
@@ -90,13 +96,16 @@ fetch('/api/users', {
 .then(response => response.json())
 .then(data => {
   console.log('Success:', data);
-});
-```
+});`}
+  language="javascript"
+  title="การส่ง JSON ผ่าน Fetch API"
+  showLineNumbers={true}
+/>
 
 ### การทำงานกับ JSON ใน Python
 
-```python
-import json
+<CodeBlock
+  code={`import json
 
 # การแปลง Dictionary เป็น JSON
 user_data = {
@@ -111,8 +120,11 @@ print(json_string)
 # การแปลง JSON เป็น Dictionary
 json_data = '{"name": "สมศักดิ์", "age": 35, "city": "เชียงใหม่"}'
 user_object = json.loads(json_data)
-print(user_object["name"])  # Output: สมศักดิ์
-```
+print(user_object["name"])  # Output: สมศักดิ์`}
+  language="python"
+  title="การใช้งาน JSON ใน Python"
+  showLineNumbers={true}
+/>
 
 ## ข้อดีของ JSON
 
