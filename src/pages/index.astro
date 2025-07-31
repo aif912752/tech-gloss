@@ -1,30 +1,40 @@
 ---
-import BaseLayout from '../layouts/BaseLayout.astro';
-import GlossaryCard from '../components/GlossaryCard.astro';
-import SearchBar from '../components/SearchBar.astro';
-import { getCollection } from 'astro:content';
+import BaseLayout from "../layouts/BaseLayout.astro";
+import GlossaryCard from "../components/GlossaryCard.astro";
+import SearchBar from "../components/SearchBar.astro";
+import { getCollection } from "astro:content";
 
 // Get all glossary entries
-const glossaryEntries = await getCollection('glossary');
+const glossaryEntries = await getCollection("glossary");
 
 // Sort entries by title
-const sortedEntries = glossaryEntries.sort((a, b) => 
-  a.data.title.localeCompare(b.data.title, 'th')
+const sortedEntries = glossaryEntries.sort((a, b) =>
+  a.data.title.localeCompare(b.data.title, "th")
 );
 
 // Get unique categories for filtering
-const categories = [...new Set(glossaryEntries.map(entry => entry.data.category))].sort();
+const categories = [
+  ...new Set(glossaryEntries.map((entry) => entry.data.category)),
+].sort();
 
 // Stats for display
 const totalTerms = glossaryEntries.length;
 const totalCategories = categories.length;
 ---
 
-<BaseLayout 
-  title="TechGloss - คลังคำศัพท์ทางเทคนิคสำหรับนักพัฒนา" 
+<BaseLayout
+  title="TechGloss - คลังคำศัพท์ทางเทคนิคสำหรับนักพัฒนา"
   description="คลังคำศัพท์ทางเทคนิคสำหรับนักพัฒนา เรียนรู้และทำความเข้าใจคำศัพท์ต่างๆ ในโลกของการพัฒนาซอฟต์แวร์ พร้อมตัวอย่างโค้ดและคำอธิบายที่เข้าใจง่าย"
   type="website"
-  tags={['developer', 'glossary', 'programming', 'tech', 'คำศัพท์', 'นักพัฒนา', 'โปรแกรมมิ่ง']}
+  tags={[
+    "developer",
+    "glossary",
+    "programming",
+    "tech",
+    "คำศัพท์",
+    "นักพัฒนา",
+    "โปรแกรมมิ่ง",
+  ]}
   allTerms={glossaryEntries}
   structuredDataType="glossary"
 >
@@ -33,20 +43,22 @@ const totalCategories = categories.length;
     <section class="text-center mb-16">
       <div class="max-w-4xl mx-auto">
         <div class="flex items-center justify-center mb-6">
-          <div class="w-16 h-16 bg-gradient-green rounded-2xl flex items-center justify-center shadow-green-lg">
+          <div
+            class="w-16 h-16 bg-gradient-green rounded-2xl flex items-center justify-center shadow-green-lg"
+          >
             <span class="text-3xl">🌿</span>
           </div>
         </div>
-        
-        <h1 class="text-display text-gradient-green mb-6">
-          TechGloss
-        </h1>
-        
-        <p class="text-body-large text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed">
-          คลังคำศัพท์ทางเทคนิคสำหรับนักพัฒนา เรียนรู้และทำความเข้าใจคำศัพท์ต่างๆ ในโลกของการพัฒนาซอฟต์แวร์ 
-          พร้อมตัวอย่างโค้ดและคำอธิบายที่เข้าใจง่าย
+
+        <h1 class="text-display text-gradient-green mb-6">TechGloss</h1>
+
+        <p
+          class="text-body-large text-muted-foreground max-w-3xl mx-auto mb-8 leading-relaxed"
+        >
+          คลังคำศัพท์ทางเทคนิคสำหรับนักพัฒนา เรียนรู้และทำความเข้าใจคำศัพท์ต่างๆ
+          ในโลกของการพัฒนาซอฟต์แวร์ พร้อมตัวอย่างโค้ดและคำอธิบายที่เข้าใจง่าย
         </p>
-        
+
         <!-- Stats -->
         <div class="flex items-center justify-center gap-8 mb-8">
           <div class="text-center">
@@ -70,7 +82,7 @@ const totalCategories = categories.length;
     <!-- Search and Filter Section -->
     <section class="mb-12">
       <div class="max-w-2xl mx-auto mb-8">
-        <SearchBar 
+        <SearchBar
           placeholder="ค้นหาคำศัพท์... เช่น API, JSON, React"
           showSuggestions={true}
           maxResults={8}
@@ -78,67 +90,103 @@ const totalCategories = categories.length;
       </div>
 
       <!-- Category Filter -->
-      {categories.length > 0 && (
-        <div class="flex flex-wrap justify-center gap-2 mb-8">
-          <button 
-            class="category-filter active px-4 py-2 rounded-full text-sm font-medium transition-colors bg-primary text-primary-foreground"
-            data-category="all"
-          >
-            ทั้งหมด ({totalTerms})
-          </button>
-          {categories.map(category => {
-            const count = glossaryEntries.filter(entry => entry.data.category === category).length;
-            return (
-              <button 
-                class="category-filter px-4 py-2 rounded-full text-sm font-medium transition-colors bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
-                data-category={category}
-              >
-                {category} ({count})
-              </button>
-            );
-          })}
-        </div>
-      )}
+      {
+        categories.length > 0 && (
+          <div class="flex flex-wrap justify-center gap-2 mb-8">
+            <button
+              class="category-filter active px-4 py-2 rounded-full text-sm font-medium transition-colors bg-primary text-primary-foreground"
+              data-category="all"
+            >
+              ทั้งหมด ({totalTerms})
+            </button>
+            {categories.map((category) => {
+              const count = glossaryEntries.filter(
+                (entry) => entry.data.category === category
+              ).length;
+              return (
+                <button
+                  class="category-filter px-4 py-2 rounded-full text-sm font-medium transition-colors bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  data-category={category}
+                >
+                  {category} ({count})
+                </button>
+              );
+            })}
+          </div>
+        )
+      }
     </section>
 
     <!-- Glossary Terms -->
     <section>
-      {sortedEntries.length === 0 ? (
-        <div class="text-center py-16">
-          <div class="max-w-md mx-auto">
-            <div class="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-              <svg class="w-12 h-12 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
-              </svg>
+      {
+        sortedEntries.length === 0 ? (
+          <div class="text-center py-16">
+            <div class="max-w-md mx-auto">
+              <div class="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
+                <svg
+                  class="w-12 h-12 text-muted-foreground"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                  />
+                </svg>
+              </div>
+              <h3 class="text-heading-3 text-foreground mb-3">
+                ยังไม่มีคำศัพท์
+              </h3>
+              <p class="text-muted-foreground">
+                คำศัพท์จะถูกเพิ่มในขั้นตอนถัดไป
+              </p>
             </div>
-            <h3 class="text-heading-3 text-foreground mb-3">ยังไม่มีคำศัพท์</h3>
-            <p class="text-muted-foreground">คำศัพท์จะถูกเพิ่มในขั้นตอนถัดไป</p>
           </div>
-        </div>
-      ) : (
-        <div id="glossary-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {sortedEntries.map((entry) => (
-            <GlossaryCard
-              title={entry.data.title}
-              slug={entry.slug}
-              category={entry.data.category}
-              description={entry.data.description}
-              tags={entry.data.tags}
-            />
-          ))}
-        </div>
-      )}
+        ) : (
+          <div
+            id="glossary-grid"
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+          >
+            {sortedEntries.map((entry) => (
+              <GlossaryCard
+                title={entry.data.title}
+                slug={entry.slug}
+                category={entry.data.category}
+                description={entry.data.description}
+                tags={entry.data.tags}
+              />
+            ))}
+          </div>
+        )
+      }
 
       <!-- No results message (hidden by default) -->
       <div id="no-results" class="text-center py-16 hidden">
         <div class="max-w-md mx-auto">
-          <div class="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
-            <svg class="w-12 h-12 text-muted-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+          <div
+            class="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6"
+          >
+            <svg
+              class="w-12 h-12 text-muted-foreground"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
           </div>
           <h3 class="text-heading-3 text-foreground mb-3">ไม่พบคำศัพท์</h3>
-          <p class="text-muted-foreground">ลองใช้คำค้นหาอื่น หรือเลือกหมวดหมู่ที่แตกต่าง</p>
+          <p class="text-muted-foreground">
+            ลองใช้คำค้นหาอื่น หรือเลือกหมวดหมู่ที่แตกต่าง
+          </p>
         </div>
       </div>
     </section>
@@ -147,101 +195,117 @@ const totalCategories = categories.length;
 
 <script>
   // Category Filter Functionality (Search is handled by SearchBar component)
-  document.addEventListener('DOMContentLoaded', () => {
-    const categoryFilters = document.querySelectorAll('.category-filter');
-    const glossaryGrid = document.getElementById('glossary-grid');
-    const noResults = document.getElementById('no-results');
-    
-    if (!glossaryGrid) return;
-    
+  document.addEventListener("DOMContentLoaded", () => {
+    const categoryFilters = document.querySelectorAll(".category-filter");
+    const glossaryGrid = document.getElementById("glossary-grid");
+    const noResults = document.getElementById("no-results");
+
+    if (!glossaryGrid || !noResults) return;
+
     // Get all glossary cards
-    const allCards = Array.from(glossaryGrid.querySelectorAll('article'));
-    let currentCategory = 'all';
-    
+    const allCards = Array.from(glossaryGrid.querySelectorAll("article"));
+    let currentCategory = "all";
+
     // Category filter functionality
-    function setActiveCategory(selectedCategory) {
+    function setActiveCategory(selectedCategory: string) {
       currentCategory = selectedCategory;
-      
+
       // Update active state
-      categoryFilters.forEach(filter => {
-        if (filter.dataset.category === selectedCategory) {
-          filter.classList.add('active', 'bg-primary', 'text-primary-foreground');
-          filter.classList.remove('bg-muted', 'text-muted-foreground');
+      categoryFilters.forEach((filter) => {
+        const htmlFilter = filter as HTMLElement;
+        if (htmlFilter.dataset.category === selectedCategory) {
+          htmlFilter.classList.add(
+            "active",
+            "bg-primary",
+            "text-primary-foreground"
+          );
+          htmlFilter.classList.remove("bg-muted", "text-muted-foreground");
         } else {
-          filter.classList.remove('active', 'bg-primary', 'text-primary-foreground');
-          filter.classList.add('bg-muted', 'text-muted-foreground');
+          htmlFilter.classList.remove(
+            "active",
+            "bg-primary",
+            "text-primary-foreground"
+          );
+          htmlFilter.classList.add("bg-muted", "text-muted-foreground");
         }
       });
-      
+
       filterByCategory();
     }
-    
+
     // Filter cards by category
     function filterByCategory() {
       let visibleCount = 0;
-      
-      allCards.forEach(card => {
-        const category = card.querySelector('.inline-flex')?.textContent?.toLowerCase() || '';
-        const matchesCategory = currentCategory === 'all' || 
+
+      allCards.forEach((card) => {
+        const category =
+          card.querySelector(".inline-flex")?.textContent?.toLowerCase() || "";
+        const matchesCategory =
+          currentCategory === "all" ||
           category.includes(currentCategory.toLowerCase());
-        
+
         if (matchesCategory) {
-          card.style.display = 'block';
-          card.classList.add('animate-fade-in');
+          card.style.display = "block";
+          card.classList.add("animate-fade-in");
           visibleCount++;
         } else {
-          card.style.display = 'none';
-          card.classList.remove('animate-fade-in');
+          card.style.display = "none";
+          card.classList.remove("animate-fade-in");
         }
       });
-      
-      // Show/hide no results message
-      if (visibleCount === 0) {
-        glossaryGrid.style.display = 'none';
-        noResults.classList.remove('hidden');
-      } else {
-        glossaryGrid.style.display = 'grid';
-        noResults.classList.add('hidden');
+
+      if (glossaryGrid && noResults) {
+        glossaryGrid.style.display = visibleCount === 0 ? "none" : "grid";
+        noResults.classList.toggle("hidden", visibleCount > 0);
       }
     }
-    
+
     // Event listeners for category filters
-    categoryFilters.forEach(filter => {
-      filter.addEventListener('click', () => {
-        setActiveCategory(filter.dataset.category);
+    categoryFilters.forEach((filter) => {
+      filter.addEventListener("click", () => {
+        const category = (filter as HTMLElement).dataset.category;
+        if (category) {
+          setActiveCategory(category);
+        }
       });
     });
-    
+
     // Listen for search events from SearchBar component
-    window.addEventListener('searchPerformed', (e) => {
-      const { query, results } = e.detail;
-      
+    window.addEventListener("searchPerformed", (e) => {
+      const { query, results } = (e as CustomEvent).detail;
+
       if (query && results.length > 0) {
         // Hide category filters when searching
-        const filterSection = document.querySelector('.flex.flex-wrap.justify-center');
+        const filterSection = document.querySelector(
+          ".flex.flex-wrap.justify-center"
+        ) as HTMLElement;
         if (filterSection) {
-          filterSection.style.opacity = '0.5';
-          filterSection.style.pointerEvents = 'none';
+          filterSection.style.opacity = "0.5";
+          filterSection.style.pointerEvents = "none";
         }
       } else {
         // Show category filters when not searching
-        const filterSection = document.querySelector('.flex.flex-wrap.justify-center');
+        const filterSection = document.querySelector(
+          ".flex.flex-wrap.justify-center"
+        ) as HTMLElement;
         if (filterSection) {
-          filterSection.style.opacity = '1';
-          filterSection.style.pointerEvents = 'auto';
+          filterSection.style.opacity = "1";
+          filterSection.style.pointerEvents = "auto";
         }
-        
+
         // Apply current category filter
         filterByCategory();
       }
     });
-    
+
     // Keyboard shortcuts
-    document.addEventListener('keydown', (e) => {
+    document.addEventListener("keydown", (e) => {
       // Focus search on '/' key
-      if (e.key === '/' && !e.ctrlKey && !e.metaKey) {
+      if (e.key === "/" && !e.ctrlKey && !e.metaKey) {
         e.preventDefault();
-        const searchInput = document.querySelector('[data-search-input]') as HTMLInputElement;
+        const searchInput = document.querySelector(
+          "[data-search-input]"
+        ) as HTMLInputElement;
         if (searchInput) {
           searchInput.focus();
         }
@@ -254,20 +318,36 @@ const totalCategories = categories.length;
   /* Search input focus animation */
   #search-input:focus {
     transform: translateY(-1px);
-    box-shadow: 0 10px 25px -5px rgba(34, 197, 94, 0.1), 0 10px 10px -5px rgba(34, 197, 94, 0.04);
+    box-shadow:
+      0 10px 25px -5px rgba(34, 197, 94, 0.1),
+      0 10px 10px -5px rgba(34, 197, 94, 0.04);
   }
-  
+
   /* Category filter hover animation */
   .category-filter:hover {
     transform: translateY(-1px);
   }
-  
+
   /* Stagger animation for cards */
-  article:nth-child(1) { animation-delay: 0ms; }
-  article:nth-child(2) { animation-delay: 50ms; }
-  article:nth-child(3) { animation-delay: 100ms; }
-  article:nth-child(4) { animation-delay: 150ms; }
-  article:nth-child(5) { animation-delay: 200ms; }
-  article:nth-child(6) { animation-delay: 250ms; }
-  article:nth-child(n+7) { animation-delay: 300ms; }
+  article:nth-child(1) {
+    animation-delay: 0ms;
+  }
+  article:nth-child(2) {
+    animation-delay: 50ms;
+  }
+  article:nth-child(3) {
+    animation-delay: 100ms;
+  }
+  article:nth-child(4) {
+    animation-delay: 150ms;
+  }
+  article:nth-child(5) {
+    animation-delay: 200ms;
+  }
+  article:nth-child(6) {
+    animation-delay: 250ms;
+  }
+  article:nth-child(n + 7) {
+    animation-delay: 300ms;
+  }
 </style>
