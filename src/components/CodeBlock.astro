@@ -1,0 +1,20 @@
+---
+// CodeBlock component - will be implemented in task 7
+export interface Props {
+  code: string;
+  language?: string;
+}
+
+const { code, language = 'javascript' } = Astro.props;
+---
+
+<!-- Placeholder for CodeBlock component -->
+<div class="code-block">
+  <pre><code>{code}</code></pre>
+</div>
+
+<style>
+  .code-block {
+    /* Styles and syntax highlighting will be implemented in task 7 */
+  }
+</style>

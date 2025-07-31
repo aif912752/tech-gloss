@@ -1,0 +1,23 @@
+---
+// RelatedLinks component - will be implemented in task 4.3
+import type { CollectionEntry } from 'astro:content';
+
+export interface Props {
+  related?: string[];
+  allTerms: CollectionEntry<'glossary'>[];
+}
+
+const { related = [], allTerms } = Astro.props;
+---
+
+<!-- Placeholder for RelatedLinks component -->
+<div class="related-links">
+  <h4>คำศัพท์ที่เกี่ยวข้อง</h4>
+  <!-- Implementation will be added in task 4.3 -->
+</div>
+
+<style>
+  .related-links {
+    /* Styles will be implemented with Tailwind CSS in task 4.3 */
+  }
+</style>

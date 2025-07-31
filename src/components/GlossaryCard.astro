@@ -1,0 +1,24 @@
+---
+// GlossaryCard component - will be implemented in task 4.1
+export interface Props {
+  title: string;
+  slug: string;
+  category: string;
+  description: string;
+}
+
+const { title, slug, category, description } = Astro.props;
+---
+
+<!-- Placeholder for GlossaryCard component -->
+<div class="glossary-card">
+  <h3>{title}</h3>
+  <span class="category">{category}</span>
+  <p>{description}</p>
+</div>
+
+<style>
+  .glossary-card {
+    /* Styles will be implemented with Tailwind CSS in task 4.1 */
+  }
+</style>
