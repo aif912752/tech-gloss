@@ -71,5 +71,7 @@ Object.defineProperty(window, 'Notification', {
 // Clean up after each test
 afterEach(() => {
   vi.clearAllMocks();
-  document.body.innerHTML = '';
+  if (document.body) {
+    document.body.innerHTML = '';
+  }
 });

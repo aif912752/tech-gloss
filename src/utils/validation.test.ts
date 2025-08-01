@@ -9,11 +9,15 @@ import {
 import type { CollectionEntry } from 'astro:content';
 
 // Mock glossary entries for testing
-const createMockEntry = (slug: string, data: any, body: string = ''): CollectionEntry<'glossary'> => ({
+const createMockEntry = (slug: string, data: any, body: string = ''): any => ({
   slug,
   data,
   body,
-  render: async () => ({ Content: () => 'Mock content' }),
+  render: async () => ({ 
+    Content: () => Promise.resolve('Mock content'),
+    headings: [],
+    remarkPluginFrontmatter: {}
+  }),
 });
 
 describe('Validation Utils', () => {

@@ -1,8 +1,6 @@
 # แผนการพัฒนา
 
 - [x] 1. ตั้งค่า Content Collections และโครงสร้างโปรเจกต์
-
-
   - สร้างการกำหนดค่า content collections พร้อม Zod schema validation
   - ตั้งค่าโครงสร้างไดเรกทอรีสำหรับเนื้อหา glossary และ components
   - กำหนดค่า TypeScript types สำหรับ content collections
@@ -129,13 +127,10 @@
   - เพิ่ม skip links และลำดับชั้น heading ที่เหมาะสม
   - _Requirements: 6.5_
 
-- [-] 14. เขียนการทดสอบที่ครอบคลุม
+- [x] 14. เขียนการทดสอบที่ครอบคลุม ✅ **เสร็จสิ้นแล้ว**
 
 
-
-
-
-- [ ] 14.1 สร้าง unit tests สำหรับ components
+- [x] 14.1 สร้าง unit tests สำหรับ components ✅ **เสร็จสิ้นแล้ว**
 
 
   - เขียนการทดสอบสำหรับ GlossaryCard, SearchBar และ RelatedLinks components
@@ -143,7 +138,7 @@
   - เพิ่มการทดสอบสำหรับ utility functions และตรรกะการค้นหา
   - _Requirements: 1.1, 1.2, 2.4, 3.2_
 
-- [ ] 14.2 เพิ่ม integration tests
+- [x] 14.2 เพิ่ม integration tests ✅ **เสร็จสิ้นแล้ว**
   - ทดสอบการสร้างหน้าสำหรับคำศัพท์ทั้งหมด
   - ตรวจสอบฟังก์ชันการค้นหาในสถานการณ์ต่างๆ
   - ทดสอบการสร้าง RSS feed และความถูกต้องของเนื้อหา

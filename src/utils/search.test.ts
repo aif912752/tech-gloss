@@ -12,9 +12,11 @@ import {
 } from './search';
 
 // Mock glossary entries for testing
-const mockEntries: CollectionEntry<'glossary'>[] = [
+const mockEntries: any[] = [
   {
+    id: 'api',
     slug: 'api',
+    collection: 'glossary',
     data: {
       title: 'API',
       description: 'Application Programming Interface - ชุดของกฎเกณฑ์และเครื่องมือสำหรับการสร้างแอปพลิเคชันซอฟต์แวร์',
@@ -24,10 +26,16 @@ const mockEntries: CollectionEntry<'glossary'>[] = [
       related: ['rest', 'json'],
     },
     body: '# API\n\nAPI คือ Application Programming Interface ซึ่งเป็นชุดของกฎเกณฑ์และเครื่องมือ\n\n## ตัวอย่างการใช้งาน\n\n```javascript\nfetch("/api/users")\n  .then(response => response.json())\n  .then(data => console.log(data));\n```',
-    render: async () => ({ Content: () => 'Mocked API content' }),
+    render: async () => ({ 
+      Content: () => Promise.resolve('Mocked API content'),
+      headings: [],
+      remarkPluginFrontmatter: {}
+    }),
   },
   {
+    id: 'json',
     slug: 'json',
+    collection: 'glossary',
     data: {
       title: 'JSON',
       description: 'JavaScript Object Notation - รูปแบบการแลกเปลี่ยนข้อมูลที่เบาและอ่านง่าย',
@@ -37,10 +45,16 @@ const mockEntries: CollectionEntry<'glossary'>[] = [
       related: ['api'],
     },
     body: '# JSON\n\nJSON ย่อมาจาก JavaScript Object Notation\n\n**ตัวอย่าง:**\n\n```json\n{\n  "name": "John",\n  "age": 30\n}\n```',
-    render: async () => ({ Content: () => 'Mocked JSON content' }),
+    render: async () => ({ 
+      Content: () => Promise.resolve('Mocked JSON content'),
+      headings: [],
+      remarkPluginFrontmatter: {}
+    }),
   },
   {
+    id: 'react',
     slug: 'react',
+    collection: 'glossary',
     data: {
       title: 'React',
       description: 'JavaScript library สำหรับสร้าง user interfaces',
@@ -50,10 +64,16 @@ const mockEntries: CollectionEntry<'glossary'>[] = [
       related: [],
     },
     body: '# React\n\nReact เป็น JavaScript library ที่พัฒนาโดย Facebook\n\n*Component-based architecture*',
-    render: async () => ({ Content: () => 'Mocked React content' }),
+    render: async () => ({ 
+      Content: () => Promise.resolve('Mocked React content'),
+      headings: [],
+      remarkPluginFrontmatter: {}
+    }),
   },
   {
+    id: 'nodejs',
     slug: 'nodejs',
+    collection: 'glossary',
     data: {
       title: 'Node.js',
       description: 'JavaScript runtime environment สำหรับ server-side development',
@@ -63,7 +83,11 @@ const mockEntries: CollectionEntry<'glossary'>[] = [
       related: ['api'],
     },
     body: '# Node.js\n\nNode.js ช่วยให้เราสามารถรัน JavaScript บน server ได้',
-    render: async () => ({ Content: () => 'Mocked Node.js content' }),
+    render: async () => ({ 
+      Content: () => Promise.resolve('Mocked Node.js content'),
+      headings: [],
+      remarkPluginFrontmatter: {}
+    }),
   }
 ];
 

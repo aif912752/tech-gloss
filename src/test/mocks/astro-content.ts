@@ -11,9 +11,9 @@ export const mockGlossaryEntries = [
       category: 'Web Development',
       tags: ['web', 'backend', 'integration', 'interface'],
       lastUpdated: new Date('2024-01-15'),
-      related: ['rest', 'json'],
+      related: ['json'],
     },
-    body: 'API content here...',
+    body: '# API\n\nAPI คือ Application Programming Interface ซึ่งเป็นชุดของกฎเกณฑ์และเครื่องมือ\n\n## ตัวอย่างการใช้งาน\n\n```javascript\nfetch("/api/users")\n  .then(response => response.json())\n  .then(data => console.log(data));\n```',
     render: vi.fn().mockResolvedValue({
       Content: () => 'Mocked API content',
     }),
@@ -28,7 +28,7 @@ export const mockGlossaryEntries = [
       lastUpdated: new Date('2024-01-10'),
       related: ['api'],
     },
-    body: 'JSON content here...',
+    body: '# JSON\n\nJSON ย่อมาจาก JavaScript Object Notation\n\n## ตัวอย่างการใช้งาน\n\n```javascript\nconst data = {\n  "name": "John",\n  "age": 30\n};\n```',
     render: vi.fn().mockResolvedValue({
       Content: () => 'Mocked JSON content',
     }),
@@ -43,7 +43,7 @@ export const mockGlossaryEntries = [
       lastUpdated: new Date('2024-01-20'),
       related: [],
     },
-    body: 'React content here...',
+    body: '# React\n\nReact เป็น JavaScript library ที่พัฒนาโดย Facebook\n\n## ตัวอย่างการใช้งาน\n\n```jsx\nfunction App() {\n  return <h1>Hello World</h1>;\n}\n```',
     render: vi.fn().mockResolvedValue({
       Content: () => 'Mocked React content',
     }),
