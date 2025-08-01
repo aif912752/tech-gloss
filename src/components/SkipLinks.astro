@@ -1,0 +1,164 @@
+---
+// Skip Links Component for accessibility
+// Allows keyboard users to skip to main content areas
+---
+
+<div class="skip-links">
+  <a href="#main-content" class="skip-link">
+    ข้ามไปเนื้อหาหลัก
+  </a>
+  <a href="#search" class="skip-link">
+    ข้ามไปการค้นหา
+  </a>
+  <a href="#navigation" class="skip-link">
+    ข้ามไปเมนูนำทาง
+  </a>
+  <a href="#glossary-content" class="skip-link">
+    ข้ามไปรายการคำศัพท์
+  </a>
+</div>
+
+<style>
+  .skip-links {
+    position: fixed;
+    top: -100px;
+    left: 0;
+    z-index: 9999;
+    width: 100%;
+    background: transparent;
+    pointer-events: none;
+  }
+  
+  .skip-link {
+    position: absolute;
+    top: 0;
+    left: 8px;
+    padding: 8px 16px;
+    background: rgb(34, 197, 94);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    border-radius: 0 0 8px 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transform: translateY(-100%);
+    transition: transform 0.2s ease-in-out;
+    pointer-events: auto;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+  
+  .skip-link:focus {
+    transform: translateY(0);
+    outline: 2px solid white;
+    outline-offset: 2px;
+  }
+  
+  .skip-link:hover {
+    background: rgb(21, 128, 61);
+  }
+  
+  /* Ensure skip links work with different themes */
+  :global(.dark) .skip-link {
+    background: rgb(34, 197, 94);
+    color: rgb(22, 101, 52);
+  }
+  
+  :global(.dark) .skip-link:hover {
+    background: rgb(74, 222, 128);
+  }
+  
+  /* Position multiple skip links */
+  .skip-link:nth-child(2) {
+    left: calc(8px + 140px);
+  }
+  
+  .skip-link:nth-child(3) {
+    left: calc(8px + 280px);
+  }
+  
+  .skip-link:nth-child(4) {
+    left: calc(8px + 420px);
+  }
+  
+  /* Responsive positioning */
+  @media (max-width: 640px) {
+    .skip-link:nth-child(2) {
+      left: 8px;
+      top: 40px;
+    }
+    
+    .skip-link:nth-child(3) {
+      left: 8px;
+      top: 80px;
+    }
+    
+    .skip-link:nth-child(4) {
+      left: 8px;
+      top: 120px;
+    }
+  }
+</style>
+
+<script>
+  // Enhance skip links functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    const skipLinks = document.querySelectorAll('.skip-link');
+    
+    skipLinks.forEach(link => {
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        const targetId = link.getAttribute('href')?.substring(1);
+        const targetElement = targetId ? document.getElementById(targetId) : null;
+        
+        if (targetElement) {
+          // Scroll to target
+          targetElement.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'start' 
+          });
+          
+          // Set focus to target element
+          // Make it focusable if it's not already
+          if (!targetElement.hasAttribute('tabindex')) {
+            targetElement.setAttribute('tabindex', '-1');
+          }
+          
+          // Focus the target element
+          targetElement.focus();
+          
+          // Remove tabindex after focus (to not interfere with normal tab flow)
+          setTimeout(() => {
+            if (targetElement.getAttribute('tabindex') === '-1') {
+              targetElement.removeAttribute('tabindex');
+            }
+          }, 100);
+          
+          // Announce to screen readers
+          const announcement = document.createElement('div');
+          announcement.setAttribute('aria-live', 'polite');
+          announcement.setAttribute('aria-atomic', 'true');
+          announcement.className = 'sr-only';
+          announcement.textContent = `ข้ามไปยัง ${link.textContent}`;
+          document.body.appendChild(announcement);
+          
+          setTimeout(() => {
+            document.body.removeChild(announcement);
+          }, 1000);
+        }
+      });
+    });
+    
+    // Show skip links on any keyboard interaction
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Tab') {
+        document.body.classList.add('keyboard-navigation');
+      }
+    });
+    
+    // Hide skip links when using mouse
+    document.addEventListener('mousedown', () => {
+      document.body.classList.remove('keyboard-navigation');
+    });
+  });
+</script>

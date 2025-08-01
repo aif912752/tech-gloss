@@ -1,0 +1,275 @@
+---
+// Custom 404 Error Page
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+// Get some popular terms to suggest
+const glossaryEntries = await getCollection('glossary');
+const popularTerms = glossaryEntries
+  .sort(() => Math.random() - 0.5) // Random shuffle
+  .slice(0, 6); // Take 6 random terms
+
+// Get categories for navigation
+const categories = [...new Set(glossaryEntries.map(entry => entry.data.category))];
+---
+
+<BaseLayout
+  title="หน้าที่คุณหาไม่พบ - TechGloss"
+  description="ขออภัย หน้าที่คุณกำลังหาไม่พบ กลับไปหน้าแรกหรือค้นหาคำศัพท์ที่ต้องการได้เลย"
+  type="website"
+  noindex={true}
+>
+  <div class="container-narrow">
+    <!-- 404 Header -->
+    <header class="text-center mb-12">
+      <div class="flex items-center justify-center mb-8">
+        <div class="relative">
+          <!-- Large 404 -->
+          <div class="text-9xl font-bold text-muted/20 select-none">404</div>
+          <!-- Overlay icon -->
+          <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-20 h-20 bg-gradient-green rounded-2xl flex items-center justify-center shadow-green-lg">
+              <span class="text-4xl">🔍</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <h1 class="text-heading-1 text-foreground mb-4">หน้าที่คุณหาไม่พบ</h1>
+      
+      <p class="text-body-large text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+        ขออภัย หน้าที่คุณกำลังหาไม่มีอยู่ หรืออาจจะถูกย้ายไปแล้ว 
+        ลองค้นหาคำศัพท์ที่ต้องการ หรือเลือกจากคำศัพท์ยอดนิยมด้านล่าง
+      </p>
+    </header>
+
+    <!-- Search Section -->
+    <section class="mb-12">
+      <div class="max-w-md mx-auto">
+        <div class="bg-card border border-border rounded-2xl p-6 shadow-lg">
+          <h2 class="text-heading-3 text-foreground text-center mb-4">ค้นหาคำศัพท์</h2>
+          
+          <div class="relative">
+            <input
+              type="text"
+              id="error-search"
+              placeholder="ค้นหาคำศัพท์... เช่น API, JSON, React"
+              class="w-full px-4 py-3 pl-12 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors bg-background text-foreground"
+            />
+            <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
+              <span class="text-muted-foreground">🔍</span>
+            </div>
+          </div>
+          
+          <button
+            onclick="performSearch()"
+            class="w-full btn-primary mt-4"
+            id="search-btn"
+          >
+            ค้นหา
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Popular Terms -->
+    <section class="mb-12">
+      <h2 class="text-heading-2 text-foreground text-center mb-8">คำศัพท์ยอดนิยม</h2>
+      
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {popularTerms.map(term => (
+          <a 
+            href={`/glossary/${term.slug}`}
+            class="block p-4 bg-card border border-border rounded-xl hover:shadow-lg hover:border-primary/20 transition-all duration-200 group"
+          >
+            <div class="flex items-start justify-between mb-2">
+              <h3 class="text-heading-4 text-foreground group-hover:text-primary transition-colors">
+                {term.data.title}
+              </h3>
+              <span class="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">
+                {term.data.category}
+              </span>
+            </div>
+            <p class="text-sm text-muted-foreground line-clamp-2">
+              {term.data.description}
+            </p>
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="mb-12">
+      <h2 class="text-heading-2 text-foreground text-center mb-8">เลือกตามหมวดหมู่</h2>
+      
+      <div class="flex flex-wrap justify-center gap-3">
+        {categories.map(category => (
+          <a
+            href={`/?category=${encodeURIComponent(category)}`}
+            class="px-4 py-2 bg-card border border-border rounded-full hover:bg-primary hover:text-primary-foreground hover:border-primary transition-all duration-200 text-sm font-medium"
+          >
+            📚 {category}
+          </a>
+        ))}
+      </div>
+    </section>
+
+    <!-- Quick Actions -->
+    <section class="mb-12">
+      <h2 class="text-heading-2 text-foreground text-center mb-8">หรือลองทำสิ่งเหล่านี้</h2>
+      
+      <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <a 
+          href="/"
+          class="flex flex-col items-center p-6 bg-card border border-border rounded-xl hover:shadow-lg hover:border-primary/20 transition-all duration-200 text-center group"
+        >
+          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+            <span class="text-2xl">🏠</span>
+          </div>
+          <h3 class="font-medium text-foreground mb-1">หน้าแรก</h3>
+          <p class="text-xs text-muted-foreground">กลับไปหน้าแรก</p>
+        </a>
+        
+        <button
+          onclick="goBack()"
+          class="flex flex-col items-center p-6 bg-card border border-border rounded-xl hover:shadow-lg hover:border-primary/20 transition-all duration-200 text-center group"
+        >
+          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+            <span class="text-2xl">⬅️</span>
+          </div>
+          <h3 class="font-medium text-foreground mb-1">ย้อนกลับ</h3>
+          <p class="text-xs text-muted-foreground">กลับหน้าก่อนหน้า</p>
+        </button>
+        
+        <a 
+          href="/newsletter"
+          class="flex flex-col items-center p-6 bg-card border border-border rounded-xl hover:shadow-lg hover:border-primary/20 transition-all duration-200 text-center group"
+        >
+          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+            <span class="text-2xl">📧</span>
+          </div>
+          <h3 class="font-medium text-foreground mb-1">Newsletter</h3>
+          <p class="text-xs text-muted-foreground">รับข่าวสารใหม่</p>
+        </a>
+        
+        <button
+          onclick="reportIssue()"
+          class="flex flex-col items-center p-6 bg-card border border-border rounded-xl hover:shadow-lg hover:border-primary/20 transition-all duration-200 text-center group"
+        >
+          <div class="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center mb-3 group-hover:bg-primary/20 transition-colors">
+            <span class="text-2xl">🐛</span>
+          </div>
+          <h3 class="font-medium text-foreground mb-1">แจ้งปัญหา</h3>
+          <p class="text-xs text-muted-foreground">แจ้งลิงก์เสีย</p>
+        </button>
+      </div>
+    </section>
+
+    <!-- Help Text -->
+    <section class="text-center">
+      <div class="bg-muted/30 rounded-xl p-6">
+        <h3 class="text-heading-4 text-foreground mb-3">ยังหาไม่เจอ?</h3>
+        <p class="text-muted-foreground mb-4">
+          หากคุณคิดว่าหน้านี้ควรจะมีอยู่ หรือพบลิงก์ที่เสีย กรุณาแจ้งให้เราทราบ
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <a 
+            href="mailto:hello@techgloss.dev?subject=404 Error Report&body=URL: ${window.location.href}"
+            class="btn-secondary"
+            onclick="this.href = this.href.replace('${window.location.href}', window.location.href)"
+          >
+            📧 ส่งอีเมลแจ้ง
+          </a>
+          <a 
+            href="https://github.com/techgloss/issues"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn-secondary"
+          >
+            🐙 แจ้งใน GitHub
+          </a>
+        </div>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<script>
+  // Search functionality
+  function performSearch() {
+    const searchInput = document.getElementById('error-search') as HTMLInputElement;
+    const query = searchInput.value.trim();
+    
+    if (query) {
+      // Redirect to homepage with search query
+      window.location.href = `/?search=${encodeURIComponent(query)}`;
+    } else {
+      // Just go to homepage if no query
+      window.location.href = '/';
+    }
+  }
+  
+  // Go back functionality
+  function goBack() {
+    if (window.history.length > 1) {
+      window.history.back();
+    } else {
+      window.location.href = '/';
+    }
+  }
+  
+  // Report issue functionality
+  function reportIssue() {
+    const currentUrl = window.location.href;
+    const subject = encodeURIComponent('404 Error Report');
+    const body = encodeURIComponent(`I found a broken link or missing page:\n\nURL: ${currentUrl}\n\nAdditional details:\n`);
+    
+    window.location.href = `mailto:hello@techgloss.dev?subject=${subject}&body=${body}`;
+  }
+  
+  // Enter key support for search
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('error-search');
+    searchInput?.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        performSearch();
+      }
+    });
+    
+    // Auto-focus search input
+    searchInput?.focus();
+    
+    // Track 404 errors (in production, you might want to send this to analytics)
+    console.log('404 Error:', window.location.href);
+  });
+</script>
+
+<style>
+  /* Line clamp utility */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  /* Hover effects */
+  .group:hover .group-hover\:bg-primary\/20 {
+    background-color: rgba(34, 197, 94, 0.2);
+  }
+  
+  .group:hover .group-hover\:text-primary {
+    color: rgb(34, 197, 94);
+  }
+  
+  /* Focus styles */
+  #error-search:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+  }
+  
+  /* Animation for cards */
+  .bg-card:hover {
+    transform: translateY(-2px);
+  }
+</style>

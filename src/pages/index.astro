@@ -2,6 +2,7 @@
 import BaseLayout from "../layouts/BaseLayout.astro";
 import GlossaryCard from "../components/GlossaryCard.astro";
 import SearchBar from "../components/SearchBar.astro";
+import NewsletterSignup from "../components/NewsletterSignup.astro";
 import { getCollection } from "astro:content";
 
 // Get all glossary entries
@@ -79,8 +80,12 @@ const totalCategories = categories.length;
       </div>
     </section>
 
+    <!-- Newsletter Signup -->
+    <NewsletterSignup />
+
     <!-- Search and Filter Section -->
-    <section class="mb-12">
+    <section class="mb-12" aria-labelledby="search-section-heading">
+      <h2 id="search-section-heading" class="sr-only">ค้นหาและกรองคำศัพท์</h2>
       <div class="max-w-2xl mx-auto mb-8">
         <SearchBar
           placeholder="ค้นหาคำศัพท์... เช่น API, JSON, React"
@@ -92,10 +97,13 @@ const totalCategories = categories.length;
       <!-- Category Filter -->
       {
         categories.length > 0 && (
-          <div class="flex flex-wrap justify-center gap-2 mb-8">
+          <div class="flex flex-wrap justify-center gap-2 mb-8" role="group" aria-labelledby="category-filter-heading">
+            <h3 id="category-filter-heading" class="sr-only">กรองตามหมวดหมู่</h3>
             <button
-              class="category-filter active px-4 py-2 rounded-full text-sm font-medium transition-colors bg-primary text-primary-foreground"
+              class="category-filter active px-4 py-2 rounded-full text-sm font-medium transition-colors bg-primary text-primary-foreground focus-ring"
               data-category="all"
+              aria-pressed="true"
+              aria-label="แสดงคำศัพท์ทั้งหมด"
             >
               ทั้งหมด ({totalTerms})
             </button>
@@ -105,8 +113,10 @@ const totalCategories = categories.length;
               ).length;
               return (
                 <button
-                  class="category-filter px-4 py-2 rounded-full text-sm font-medium transition-colors bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground"
+                  class="category-filter px-4 py-2 rounded-full text-sm font-medium transition-colors bg-muted text-muted-foreground hover:bg-accent hover:text-accent-foreground focus-ring"
                   data-category={category}
+                  aria-pressed="false"
+                  aria-label={`แสดงคำศัพท์ในหมวด ${category}`}
                 >
                   {category} ({count})
                 </button>
@@ -118,10 +128,11 @@ const totalCategories = categories.length;
     </section>
 
     <!-- Glossary Terms -->
-    <section>
+    <section aria-labelledby="glossary-section-heading">
+      <h2 id="glossary-section-heading" class="sr-only">รายการคำศัพท์</h2>
       {
         sortedEntries.length === 0 ? (
-          <div class="text-center py-16">
+          <div class="text-center py-16" role="status" aria-live="polite">
             <div class="max-w-md mx-auto">
               <div class="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6">
                 <svg
@@ -129,6 +140,7 @@ const totalCategories = categories.length;
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <path
                     stroke-linecap="round"
@@ -150,6 +162,8 @@ const totalCategories = categories.length;
           <div
             id="glossary-grid"
             class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+            role="list"
+            aria-label={`รายการคำศัพท์ทั้งหมด ${sortedEntries.length} คำ`}
           >
             {sortedEntries.map((entry) => (
               <GlossaryCard
@@ -165,7 +179,7 @@ const totalCategories = categories.length;
       }
 
       <!-- No results message (hidden by default) -->
-      <div id="no-results" class="text-center py-16 hidden">
+      <div id="no-results" class="text-center py-16 hidden" role="status" aria-live="polite">
         <div class="max-w-md mx-auto">
           <div
             class="w-24 h-24 bg-muted rounded-full flex items-center justify-center mx-auto mb-6"
@@ -175,6 +189,7 @@ const totalCategories = categories.length;
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
+              aria-hidden="true"
             >
               <path
                 stroke-linecap="round"
@@ -210,7 +225,7 @@ const totalCategories = categories.length;
     function setActiveCategory(selectedCategory: string) {
       currentCategory = selectedCategory;
 
-      // Update active state
+      // Update active state and ARIA attributes
       categoryFilters.forEach((filter) => {
         const htmlFilter = filter as HTMLElement;
         if (htmlFilter.dataset.category === selectedCategory) {
@@ -220,6 +235,7 @@ const totalCategories = categories.length;
             "text-primary-foreground"
           );
           htmlFilter.classList.remove("bg-muted", "text-muted-foreground");
+          htmlFilter.setAttribute("aria-pressed", "true");
         } else {
           htmlFilter.classList.remove(
             "active",
@@ -227,10 +243,15 @@ const totalCategories = categories.length;
             "text-primary-foreground"
           );
           htmlFilter.classList.add("bg-muted", "text-muted-foreground");
+          htmlFilter.setAttribute("aria-pressed", "false");
         }
       });
 
       filterByCategory();
+      
+      // Announce filter change to screen readers
+      const categoryName = selectedCategory === 'all' ? 'ทั้งหมด' : selectedCategory;
+      announceToScreenReader(`กรองแสดงคำศัพท์ในหมวด ${categoryName}`);
     }
 
     // Filter cards by category
@@ -257,6 +278,11 @@ const totalCategories = categories.length;
       if (glossaryGrid && noResults) {
         glossaryGrid.style.display = visibleCount === 0 ? "none" : "grid";
         noResults.classList.toggle("hidden", visibleCount > 0);
+        
+        // Update ARIA label with current count
+        if (visibleCount > 0) {
+          glossaryGrid.setAttribute("aria-label", `รายการคำศัพท์ ${visibleCount} คำ`);
+        }
       }
     }
 
@@ -298,19 +324,53 @@ const totalCategories = categories.length;
       }
     });
 
-    // Keyboard shortcuts
+    // Keyboard shortcuts and accessibility helpers
     document.addEventListener("keydown", (e) => {
       // Focus search on '/' key
-      if (e.key === "/" && !e.ctrlKey && !e.metaKey) {
+      if (e.key === "/" && !e.ctrlKey && !e.metaKey && e.target !== document.querySelector("[data-search-input]")) {
         e.preventDefault();
         const searchInput = document.querySelector(
           "[data-search-input]"
         ) as HTMLInputElement;
         if (searchInput) {
           searchInput.focus();
+          announceToScreenReader("โฟกัสไปที่ช่องค้นหา");
         }
       }
+      
+      // Navigate category filters with arrow keys when focused
+      if ((e.key === "ArrowLeft" || e.key === "ArrowRight") && 
+          (e.target as HTMLElement)?.classList.contains("category-filter")) {
+        e.preventDefault();
+        const filters = Array.from(categoryFilters);
+        const currentIndex = filters.indexOf(e.target as HTMLElement);
+        let nextIndex;
+        
+        if (e.key === "ArrowLeft") {
+          nextIndex = currentIndex > 0 ? currentIndex - 1 : filters.length - 1;
+        } else {
+          nextIndex = currentIndex < filters.length - 1 ? currentIndex + 1 : 0;
+        }
+        
+        (filters[nextIndex] as HTMLElement).focus();
+      }
     });
+    
+    // Helper function to announce to screen readers
+    function announceToScreenReader(message: string) {
+      const announcement = document.createElement('div');
+      announcement.setAttribute('aria-live', 'polite');
+      announcement.setAttribute('aria-atomic', 'true');
+      announcement.className = 'sr-only';
+      announcement.textContent = message;
+      document.body.appendChild(announcement);
+      
+      setTimeout(() => {
+        if (document.body.contains(announcement)) {
+          document.body.removeChild(announcement);
+        }
+      }, 1000);
+    }
   });
 </script>
 

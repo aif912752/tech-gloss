@@ -80,8 +80,6 @@
   - _Requirements: 3.1, 3.2, 3.5_
 
 - [x] 8.2 พัฒนา SearchBar component
-
-
   - สร้าง interactive search component พร้อมการรวม Fuse.js
   - เพิ่มการกรองแบบ real-time พร้อมการจัดการ input แบบ debounced
   - พัฒนาการเน้นผลการค้นหาและการนำทางด้วยคีย์บอร์ด
@@ -89,44 +87,45 @@
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
 - [x] 8.3 รวมการค้นหาเข้ากับหน้าแรก
-
-
   - เพิ่ม SearchBar component ในหน้าแรกพร้อม client:load directive
   - พัฒนาการแสดงผลการค้นหาที่แทนที่หรือกรอง term grid
   - เพิ่มการจัดการ search state และการสนับสนุน URL parameter
   - _Requirements: 3.1, 3.2, 3.3, 3.5_
 
 - [x] 9. พัฒนาระบบ theme
-
   - สร้าง ThemeToggle component พร้อมการเปลี่ยน theme ฝั่ง client
   - เพิ่มการเก็บค่า theme preference ใน localStorage
   - พัฒนา Tailwind dark mode configuration และ CSS custom properties สำหรับตัวแปร theme สว่าง/มืด
   - รวมการตรวจจับค่าตั้งระบบและ fallbacks ที่เหมาะสม
   - _Requirements: 6.2_
 
-- [ ] 10. เพิ่มการปรับแต่ง SEO และ meta tag
-
-
+- [x] 10. เพิ่มการปรับแต่ง SEO และ meta tag
   - พัฒนาการสร้าง meta tag ที่ครอบคลุมสำหรับทุกหน้า
   - เพิ่มการสนับสนุน Open Graph และ Twitter Card สำหรับการแชร์โซเชียล
   - สร้างการสร้าง sitemap.xml สำหรับการจัดทำดัชนีของ search engine
   - รวม structured data markup สำหรับคำศัพท์
   - _Requirements: 5.2, 5.4_
 
-- [ ] 11. สร้างฟังก์ชัน RSS feed
-  - พัฒนาการสร้าง RSS feed สำหรับคำศัพท์ใหม่และที่อัปเดต
-  - เพิ่มการจัดรูปแบบ XML ที่เหมาะสมพร้อมคำอธิบายและลิงก์คำศัพท์
-  - รวม feed discovery meta tags ใน page headers
+- [x] 11. สร้างระบบ Email Newsletter
+  - พัฒนาระบบสมัครรับข่าวสารทางอีเมลที่ใช้ง่ายสำหรับคนทั่วไป
+  - สร้างหน้า Newsletter พร้อมฟอร์มสมัครและตัวอย่างเนื้อหา
+  - เพิ่ม API endpoint สำหรับการสมัครสมาชิกและ Quick Signup component
+  - รวม RSS feed พื้นฐานสำหรับ developers ที่ต้องการ
+  - เพิ่มเติม: 
+  - Email service (Resend, SendGrid) Database (supabase) Email templates Scheduler
   - _Requirements: 6.3_
 
-- [ ] 12. เพิ่มการจัดการข้อผิดพลาดและหน้า 404
+- [x] 12. เพิ่มการจัดการข้อผิดพลาดและหน้า 404
   - สร้างหน้า 404 แบบกำหนดเองพร้อมการนำทางที่มีประโยชน์กลับไปหน้า glossary
   - พัฒนา error boundaries สำหรับความล้มเหลวของ component
   - เพิ่มการตรวจสอบการอ้างอิง related term ในระหว่าง build
   - รวมการลดประสิทธิภาพอย่างสง่างามสำหรับฟีเจอร์ที่ขึ้นอยู่กับ JavaScript
   - _Requirements: 2.1, 3.4_
 
-- [ ] 13. พัฒนาฟีเจอร์การเข้าถึง
+- [x] 13. พัฒนาฟีเจอร์การเข้าถึง
+
+
+
   - เพิ่ม ARIA labels และโครงสร้าง HTML ที่มีความหมายที่เหมาะสม
   - พัฒนาการนำทางด้วยคีย์บอร์ดสำหรับการค้นหาและองค์ประกอบแบบ interactive
   - รวมการจัดการ focus และการสนับสนุน screen reader

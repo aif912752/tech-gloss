@@ -128,9 +128,58 @@ const canonicalUrl = canonical || fullUrl;
 <meta name="language" content="th" />
 <meta name="geo.region" content="TH" />
 <meta name="geo.country" content="Thailand" />
+<meta http-equiv="content-language" content="th" />
 
 <!-- Keywords (if tags provided) -->
 {tags.length > 0 && <meta name="keywords" content={tags.join(", ")} />}
+
+<!-- Search Engine Verification -->
+{seoConfig.googleSiteVerification && (
+  <meta name="google-site-verification" content={seoConfig.googleSiteVerification} />
+)}
+{seoConfig.bingSiteVerification && (
+  <meta name="msvalidate.01" content={seoConfig.bingSiteVerification} />
+)}
+{seoConfig.yandexVerification && (
+  <meta name="yandex-verification" content={seoConfig.yandexVerification} />
+)}
+
+<!-- Additional SEO Meta Tags -->
+<meta name="format-detection" content="telephone=no" />
+<meta name="HandheldFriendly" content="true" />
+<meta name="MobileOptimized" content="width" />
+<meta name="apple-touch-fullscreen" content="yes" />
+
+<!-- Content Security and Cache Control -->
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="referrer" content="strict-origin-when-cross-origin" />
+
+<!-- Dublin Core Metadata -->
+<meta name="DC.title" content={title} />
+<meta name="DC.description" content={description} />
+<meta name="DC.language" content="th" />
+<meta name="DC.creator" content={seoConfig.organizationName} />
+<meta name="DC.publisher" content={seoConfig.organizationName} />
+<meta name="DC.type" content="Text" />
+<meta name="DC.format" content="text/html" />
+
+<!-- Additional Open Graph Tags -->
+<meta property="og:site_name" content={seoConfig.siteName} />
+<meta property="og:locale" content={seoConfig.locale} />
+{seoConfig.alternateLocales?.map(locale => (
+  <meta property="og:locale:alternate" content={locale} />
+))}
+
+<!-- Enhanced Twitter Card -->
+<meta name="twitter:domain" content={new URL(seoConfig.siteUrl).hostname} />
+<meta name="twitter:url" content={fullUrl} />
+
+<!-- App-specific meta tags -->
+<meta name="application-name" content={seoConfig.siteName} />
+<meta name="apple-mobile-web-app-title" content={seoConfig.siteName} />
+<meta name="msapplication-tooltip" content={description} />
+<meta name="msapplication-starturl" content="/" />
+<meta name="msapplication-navbutton-color" content="#22c55e" />
 
 <!-- Structured Data -->
 <StructuredData type={structuredDataType} entry={entry} allTerms={allTerms} />
@@ -153,4 +202,49 @@ const canonicalUrl = canonical || fullUrl;
   type="application/xml"
   title="Sitemap"
   href="/sitemap.xml"
+/>
+
+<!-- Humans.txt -->
+<link
+  rel="author"
+  type="text/plain"
+  href="/humans.txt"
+/>
+
+<!-- Security.txt -->
+<link
+  rel="security"
+  type="text/plain"
+  href="/.well-known/security.txt"
+/>
+
+<!-- Web App Manifest -->
+<link
+  rel="manifest"
+  href="/manifest.json"
+/>
+
+<!-- Apple Touch Icons -->
+<link
+  rel="apple-touch-icon"
+  sizes="180x180"
+  href="/apple-touch-icon.png"
+/>
+<link
+  rel="icon"
+  type="image/png"
+  sizes="32x32"
+  href="/favicon-32x32.png"
+/>
+<link
+  rel="icon"
+  type="image/png"
+  sizes="16x16"
+  href="/favicon-16x16.png"
+/>
+
+<!-- Microsoft Tiles -->
+<meta
+  name="msapplication-config"
+  content="/browserconfig.xml"
 />

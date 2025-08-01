@@ -1,0 +1,33 @@
+import type { APIRoute } from 'astro';
+import { seoConfig } from '../config/seo.ts';
+
+export const GET: APIRoute = async () => {
+  const browserConfig = `<?xml version="1.0" encoding="utf-8"?>
+<browserconfig>
+  <msapplication>
+    <tile>
+      <square70x70logo src="/mstile-70x70.png"/>
+      <square150x150logo src="/mstile-150x150.png"/>
+      <square310x310logo src="/mstile-310x310.png"/>
+      <wide310x150logo src="/mstile-310x150.png"/>
+      <TileColor>${seoConfig.themeColor}</TileColor>
+    </tile>
+    <notification>
+      <polling-uri src="/notifications/feed1.xml"/>
+      <polling-uri2 src="/notifications/feed2.xml"/>
+      <polling-uri3 src="/notifications/feed3.xml"/>
+      <polling-uri4 src="/notifications/feed4.xml"/>
+      <polling-uri5 src="/notifications/feed5.xml"/>
+      <frequency>30</frequency>
+      <cycle>1</cycle>
+    </notification>
+  </msapplication>
+</browserconfig>`;
+
+  return new Response(browserConfig, {
+    headers: {
+      'Content-Type': 'application/xml; charset=utf-8',
+      'Cache-Control': 'public, max-age=86400',
+    },
+  });
+};

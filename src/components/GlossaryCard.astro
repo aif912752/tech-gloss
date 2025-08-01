@@ -26,27 +26,34 @@ const getCategoryColor = (category: string) => {
 const categoryColorClass = getCategoryColor(category);
 ---
 
-<article class="glossary-card group animate-fade-in">
+<article class="glossary-card group animate-fade-in" role="listitem">
   <div class="flex items-start justify-between mb-3">
     <div class="flex-1">
       <h3 class="text-heading-3 text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
-        <a href={`/glossary/${slug}`} class="hover:underline focus-ring rounded-sm">
+        <a 
+          href={`/glossary/${slug}`} 
+          class="hover:underline focus-ring rounded-sm"
+          aria-label={`อ่านเพิ่มเติมเกี่ยวกับ ${title} ในหมวด ${category}`}
+        >
           {title}
         </a>
       </h3>
-      <span class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${categoryColorClass}`}>
+      <span 
+        class={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium border ${categoryColorClass}`}
+        aria-label={`หมวดหมู่ ${category}`}
+      >
         {category}
       </span>
     </div>
     
     <!-- Visual indicator -->
-    <div class="flex-shrink-0 ml-3">
+    <div class="flex-shrink-0 ml-3" aria-hidden="true">
       <div class="w-3 h-3 bg-primary/20 rounded-full group-hover:bg-primary/40 transition-colors"></div>
     </div>
   </div>
   
-  <p class="text-body text-muted-foreground leading-relaxed mb-4 line-clamp-3">
-    {description}
+  <p class="text-body text-muted-foreground leading-relaxed mb-4 line-clamp-3" aria-describedby={`desc-${slug}`}>
+    <span id={`desc-${slug}`}>{description}</span>
   </p>
   
   <!-- Tags (if available) -->

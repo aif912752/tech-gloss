@@ -1,5 +1,7 @@
 ---
-// SearchBar component - Advanced search with Fuse.js integration
+// SearchBar component - Advanced search with Fuse.js integration and graceful degradation
+import GracefulDegradation from './GracefulDegradation.astro';
+
 export interface Props {
   placeholder?: string;
   onSearch?: string; // Callback function name
@@ -15,9 +17,10 @@ const {
 } = Astro.props;
 
 // Generate unique ID for this search bar
-const searchId = `search-${Math.random().toString(36).substr(2, 9)}`;
+const searchId = `search-${Math.random().toString(36).substring(2, 9)}`;
 ---
 
+<GracefulDegradation feature="search">
 <div class="search-bar-container relative" data-search-id={searchId}>
   <!-- Search Input -->
   <div class="relative">
@@ -34,13 +37,22 @@ const searchId = `search-${Math.random().toString(36).substr(2, 9)}`;
       autocomplete="off"
       spellcheck="false"
       data-search-input
+      id="search"
+      role="searchbox"
+      aria-label="ค้นหาคำศัพท์ทางเทคนิค"
+      aria-describedby="search-instructions"
+      aria-expanded="false"
+      aria-autocomplete="list"
+      aria-owns="search-results"
     />
     
     <!-- Clear button -->
     <button 
-      class="clear-button absolute inset-y-0 right-0 pr-4 flex items-center opacity-0 transition-opacity"
+      class="clear-button absolute inset-y-0 right-0 pr-4 flex items-center opacity-0 transition-opacity focus-ring rounded"
       title="ล้างการค้นหา"
+      aria-label="ล้างการค้นหา"
       data-clear-search
+      tabindex="-1"
     >
       <svg class="w-5 h-5 text-muted-foreground hover:text-foreground" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -57,9 +69,14 @@ const searchId = `search-${Math.random().toString(36).substr(2, 9)}`;
   </div>
   
   <!-- Search Results Dropdown -->
-  <div class="search-results absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-lg z-50 max-h-96 overflow-y-auto hidden">
+  <div 
+    class="search-results absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-lg z-50 max-h-96 overflow-y-auto hidden"
+    id="search-results"
+    role="listbox"
+    aria-label="ผลการค้นหา"
+  >
     <!-- Results will be populated by JavaScript -->
-    <div class="search-results-content"></div>
+    <div class="search-results-content" role="group" aria-label="รายการผลการค้นหา"></div>
     
     <!-- No results message -->
     <div class="no-results hidden p-4 text-center text-muted-foreground">
@@ -71,20 +88,29 @@ const searchId = `search-${Math.random().toString(36).substr(2, 9)}`;
     </div>
     
     <!-- Popular searches -->
-    <div class="popular-searches p-4 border-t border-border">
-      <h4 class="text-sm font-medium text-foreground mb-2">คำค้นหายอดนิยม</h4>
-      <div class="flex flex-wrap gap-2">
-        <button class="popular-term px-2 py-1 text-xs bg-muted hover:bg-accent rounded-full transition-colors" data-term="API">API</button>
-        <button class="popular-term px-2 py-1 text-xs bg-muted hover:bg-accent rounded-full transition-colors" data-term="JavaScript">JavaScript</button>
-        <button class="popular-term px-2 py-1 text-xs bg-muted hover:bg-accent rounded-full transition-colors" data-term="React">React</button>
-        <button class="popular-term px-2 py-1 text-xs bg-muted hover:bg-accent rounded-full transition-colors" data-term="JSON">JSON</button>
+    <div class="popular-searches p-4 border-t border-border" role="group" aria-labelledby="popular-searches-heading">
+      <h4 id="popular-searches-heading" class="text-sm font-medium text-foreground mb-2">คำค้นหายอดนิยม</h4>
+      <div class="flex flex-wrap gap-2" role="list">
+        <button class="popular-term px-2 py-1 text-xs bg-muted hover:bg-accent rounded-full transition-colors focus-ring" data-term="API" role="listitem" aria-label="ค้นหา API">API</button>
+        <button class="popular-term px-2 py-1 text-xs bg-muted hover:bg-accent rounded-full transition-colors focus-ring" data-term="JavaScript" role="listitem" aria-label="ค้นหา JavaScript">JavaScript</button>
+        <button class="popular-term px-2 py-1 text-xs bg-muted hover:bg-accent rounded-full transition-colors focus-ring" data-term="React" role="listitem" aria-label="ค้นหา React">React</button>
+        <button class="popular-term px-2 py-1 text-xs bg-muted hover:bg-accent rounded-full transition-colors focus-ring" data-term="JSON" role="listitem" aria-label="ค้นหา JSON">JSON</button>
       </div>
     </div>
   </div>
   
   <!-- Search overlay (for mobile) -->
   <div class="search-overlay fixed inset-0 bg-background/80 backdrop-blur-sm z-40 hidden lg:hidden"></div>
+  
+  <!-- Search instructions for screen readers -->
+  <div id="search-instructions" class="sr-only">
+    ใช้ลูกศรขึ้นลงเพื่อเลือกผลการค้นหา กด Enter เพื่อเปิด หรือ Escape เพื่อปิด
+  </div>
+  
+  <!-- Live region for search announcements -->
+  <div id="search-live-region" class="sr-only" aria-live="polite" aria-atomic="true"></div>
 </div>
+</GracefulDegradation>
 
 <script>
   // Import Fuse.js dynamically
@@ -100,6 +126,7 @@ const searchId = `search-${Math.random().toString(36).substr(2, 9)}`;
       private debounceTimer: number = 0;
       private currentQuery: string = '';
       private selectedIndex: number = -1;
+      private liveRegion: HTMLElement | null = null;
       
       constructor(container: HTMLElement) {
         this.container = container;
@@ -152,6 +179,8 @@ const searchId = `search-${Math.random().toString(36).substr(2, 9)}`;
           } else {
             this.showPopularSearches();
           }
+          // Update ARIA expanded state
+          this.input.setAttribute('aria-expanded', 'true');
         });
         
         // Clear button
@@ -177,6 +206,9 @@ const searchId = `search-${Math.random().toString(36).substr(2, 9)}`;
             this.hideResults();
           }
         });
+        
+        // Announce search results to screen readers
+        this.setupLiveRegion();
       }
       
       setupKeyboardNavigation() {
@@ -218,8 +250,10 @@ const searchId = `search-${Math.random().toString(36).substr(2, 9)}`;
         // Show/hide clear button
         if (query) {
           this.clearButton.style.opacity = '1';
+          this.clearButton.setAttribute('tabindex', '0');
         } else {
           this.clearButton.style.opacity = '0';
+          this.clearButton.setAttribute('tabindex', '-1');
         }
         
         // Debounce search
@@ -242,6 +276,14 @@ const searchId = `search-${Math.random().toString(36).substr(2, 9)}`;
           const results = this.fuse ? this.fuse.search(query) : [];
           this.displayResults(results, query);
           this.hideLoading();
+          
+          // Announce results to screen readers
+          const resultCount = results.length;
+          if (resultCount === 0) {
+            this.announceLiveRegion('ไม่พบผลการค้นหา');
+          } else {
+            this.announceLiveRegion(`พบผลการค้นหา ${resultCount} รายการ`);
+          }
         }, 100);
       }
       
@@ -264,7 +306,14 @@ const searchId = `search-${Math.random().toString(36).substr(2, 9)}`;
             const highlightedDescription = this.highlightMatches(item.description, query);
             
             return `
-              <a href="/glossary/${item.slug}" class="search-result-item block p-4 hover:bg-accent transition-colors ${index === 0 ? 'border-t-0' : 'border-t border-border'}">
+              <a 
+                href="/glossary/${item.slug}" 
+                class="search-result-item block p-4 hover:bg-accent transition-colors focus-ring rounded ${index === 0 ? 'border-t-0' : 'border-t border-border'}"
+                role="option"
+                aria-selected="false"
+                aria-label="${item.title} - ${item.description}"
+                tabindex="-1"
+              >
                 <div class="flex items-start justify-between">
                   <div class="flex-1">
                     <h4 class="font-semibold text-foreground mb-1">${highlightedTitle}</h4>
@@ -280,7 +329,7 @@ const searchId = `search-${Math.random().toString(36).substr(2, 9)}`;
                       `).join('')}
                     </div>
                   </div>
-                  <svg class="w-4 h-4 text-muted-foreground flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg class="w-4 h-4 text-muted-foreground flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
                   </svg>
                 </div>
@@ -316,19 +365,33 @@ const searchId = `search-${Math.random().toString(36).substr(2, 9)}`;
         items.forEach((item, index) => {
           if (index === this.selectedIndex) {
             item.classList.add('bg-accent');
+            item.setAttribute('aria-selected', 'true');
+            // Announce selection to screen readers
+            const title = item.querySelector('h4')?.textContent || '';
+            this.announceLiveRegion(`เลือก ${title}`);
           } else {
             item.classList.remove('bg-accent');
+            item.setAttribute('aria-selected', 'false');
           }
         });
       }
       
       showResults() {
         this.results.classList.remove('hidden');
+        this.input.setAttribute('aria-expanded', 'true');
       }
       
       hideResults() {
         this.results.classList.add('hidden');
+        this.input.setAttribute('aria-expanded', 'false');
         this.selectedIndex = -1;
+        
+        // Clear selection states
+        const items = this.results.querySelectorAll('.search-result-item');
+        items.forEach(item => {
+          item.setAttribute('aria-selected', 'false');
+          item.classList.remove('bg-accent');
+        });
       }
       
       showLoading() {
@@ -343,8 +406,20 @@ const searchId = `search-${Math.random().toString(36).substr(2, 9)}`;
         this.input.value = '';
         this.currentQuery = '';
         this.clearButton.style.opacity = '0';
+        this.clearButton.setAttribute('tabindex', '-1');
         this.hideResults();
         this.input.focus();
+        this.announceLiveRegion('ล้างการค้นหาแล้ว');
+      }
+      
+      setupLiveRegion() {
+        this.liveRegion = document.getElementById('search-live-region');
+      }
+      
+      announceLiveRegion(message: string) {
+        if (this.liveRegion) {
+          this.liveRegion.textContent = message;
+        }
       }
     }
     

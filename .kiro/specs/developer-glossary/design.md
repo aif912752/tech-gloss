@@ -55,7 +55,7 @@ src/
 │   ├── BaseLayout.astro       # Base HTML structure
 │   └── GlossaryLayout.astro   # Layout for term pages
 └── styles/
-    └── global.css             # Global styles and themes
+    └── starwind.css             # Global styles and themes
 ```
 
 ## Components and Interfaces

@@ -32,7 +32,7 @@
 │   ├── pages/
 │   │   └── index.astro        # หน้าแรก
 │   └── styles/
-│       └── globals.css        # Tailwind CSS
+│       └── starwind.css        # Tailwind CSS
 ├── .kiro/
 │   └── specs/                 # Specification files
 └── package.json

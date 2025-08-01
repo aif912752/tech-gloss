@@ -1,13 +1,14 @@
 ---
 // BaseLayout - Base HTML structure for all pages
-import "../styles/global.css";
+import "../styles/starwind.css";
 import ThemeToggle from "../components/ThemeToggle.astro";
 import SEO from "../components/SEO.astro";
+import SkipLinks from "../components/SkipLinks.astro";
 
 export interface Props {
   title: string;
   description?: string;
-  type?: 'website' | 'article';
+  type?: "website" | "article";
   image?: string;
   imageAlt?: string;
   publishedTime?: Date;
@@ -19,13 +20,13 @@ export interface Props {
   canonical?: string;
   entry?: any;
   allTerms?: any[];
-  structuredDataType?: 'website' | 'glossary' | 'term';
+  structuredDataType?: "website" | "glossary" | "term";
 }
 
 const {
   title,
   description = "TechGloss - Developer Glossary",
-  type = 'website',
+  type = "website",
   image,
   imageAlt,
   publishedTime,
@@ -37,7 +38,7 @@ const {
   canonical,
   entry,
   allTerms,
-  structuredDataType = 'website',
+  structuredDataType = "website",
 } = Astro.props;
 ---
 
@@ -50,7 +51,7 @@ const {
     <meta name="generator" content={Astro.generator} />
 
     <!-- SEO Meta Tags -->
-    <SEO 
+    <SEO
       title={title}
       description={description}
       type={type}
@@ -88,10 +89,13 @@ const {
     </script>
   </head>
   <body class="min-h-full bg-background text-foreground font-sans antialiased">
+    <!-- Skip Links for Accessibility -->
+    <SkipLinks />
+
     <div class="min-h-full">
-      <header class="bg-card shadow-sm border-b border-border">
+      <header class="bg-card shadow-sm border-b border-border" role="banner">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex justify-between items-center py-6">
+          <div class="grid grid-cols-3 items-center py-6" id="navigation">
             <div class="flex items-center space-x-3">
               <div
                 class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center"
@@ -111,30 +115,54 @@ const {
                 Green Knowledge
               </span>
             </div>
-            <nav class="flex items-center space-x-6">
+            <nav
+              class="flex items-center justify-center space-x-6"
+              role="navigation"
+              aria-label="เมนูหลัก"
+            >
               <a
                 href="/"
-                class="text-foreground/80 hover:text-primary transition-colors font-medium"
+                class="text-foreground/80 hover:text-primary transition-colors font-medium focus-ring rounded-sm px-2 py-1"
+                aria-label="ไปหน้าแรก"
               >
                 หน้าแรก
               </a>
               <a
+                href="/newsletter"
+                class="text-foreground/80 hover:text-primary transition-colors font-medium flex items-center focus-ring rounded-sm px-2 py-1"
+                title="รับข่าวสารทางอีเมล"
+                aria-label="สมัครรับ Newsletter"
+              >
+                <span class="mr-1" aria-hidden="true">📧</span>
+                Newsletter
+              </a>
+              <a
                 href="/about"
-                class="text-foreground/80 hover:text-primary transition-colors font-medium"
+                class="text-foreground/80 hover:text-primary transition-colors font-medium focus-ring rounded-sm px-2 py-1"
+                aria-label="เกี่ยวกับ TechGloss"
               >
                 เกี่ยวกับ
               </a>
-              <ThemeToggle />
             </nav>
+            <div class="flex justify-end">
+              <ThemeToggle />
+            </div>
           </div>
         </div>
       </header>
 
-      <main class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8">
+      <main
+        class="max-w-7xl mx-auto py-8 px-4 sm:px-6 lg:px-8"
+        role="main"
+        id="main-content"
+      >
         <slot />
       </main>
 
-      <footer class="bg-muted/30 border-t border-border mt-16">
+      <footer
+        class="bg-muted/30 border-t border-border mt-16"
+        role="contentinfo"
+      >
         <div class="max-w-7xl mx-auto py-12 px-4 sm:px-6 lg:px-8">
           <div class="text-center">
             <div class="flex items-center justify-center space-x-2 mb-4">

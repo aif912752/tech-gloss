@@ -1,0 +1,140 @@
+---
+// Simple Newsletter Signup Component with graceful degradation
+import GracefulDegradation from './GracefulDegradation.astro';
+---
+
+<div class="bg-gradient-to-r from-primary/5 to-primary/10 border border-primary/20 rounded-2xl p-6 mb-8">
+  <div class="text-center">
+    <div class="flex items-center justify-center mb-4">
+      <span class="text-3xl mr-2">📧</span>
+      <h3 class="text-heading-3 text-foreground">รับคำศัพท์ใหม่ทางอีเมล</h3>
+    </div>
+    
+    <p class="text-muted-foreground mb-6 max-w-md mx-auto">
+      สมัครรับ Newsletter เพื่อติดตามคำศัพท์ทางเทคนิคใหม่ๆ ทุกสัปดาห์
+    </p>
+    
+    <GracefulDegradation feature="newsletter">
+    <div class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+      <input
+        type="email"
+        id="quick-email"
+        placeholder="your@email.com"
+        class="flex-1 px-4 py-2 border border-border rounded-lg focus:ring-2 focus:ring-primary focus:border-primary transition-colors bg-background text-foreground"
+      />
+      <button
+        onclick="quickSubscribe()"
+        class="btn-primary px-6 py-2 whitespace-nowrap"
+        id="quick-subscribe-btn"
+      >
+        สมัครเลย
+      </button>
+    </div>
+    </GracefulDegradation>
+    
+    <p class="text-xs text-muted-foreground mt-3">
+      หรือ <a href="/newsletter" class="text-primary hover:underline">ดูรายละเอียดเพิ่มเติม</a>
+    </p>
+    
+    <!-- Quick messages -->
+    <div id="quick-success" class="hidden mt-3 text-sm text-green-600">
+      ✅ สมัครสำเร็จ! กรุณาตรวจสอบอีเมล
+    </div>
+    <div id="quick-error" class="hidden mt-3 text-sm text-red-600">
+      ❌ เกิดข้อผิดพลาด กรุณาลองใหม่
+    </div>
+  </div>
+</div>
+
+<script>
+  async function quickSubscribe() {
+    const emailInput = document.getElementById('quick-email') as HTMLInputElement;
+    const btn = document.getElementById('quick-subscribe-btn') as HTMLButtonElement;
+    const successMsg = document.getElementById('quick-success');
+    const errorMsg = document.getElementById('quick-error');
+    
+    const email = emailInput.value.trim();
+    
+    if (!email) {
+      showQuickError('กรุณาใส่อีเมล');
+      return;
+    }
+    
+    // Simple email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      showQuickError('รูปแบบอีเมลไม่ถูกต้อง');
+      return;
+    }
+    
+    // Show loading
+    btn.disabled = true;
+    btn.textContent = 'กำลังสมัคร...';
+    
+    try {
+      const response = await fetch('/api/newsletter', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          agree: true // Auto-agree for quick signup
+        })
+      });
+      
+      const result = await response.json();
+      
+      if (result.success) {
+        showQuickSuccess();
+        emailInput.value = '';
+      } else {
+        showQuickError(result.message);
+      }
+      
+    } catch (error) {
+      showQuickError('เกิดข้อผิดพลาด กรุณาลองใหม่');
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'สมัครเลย';
+    }
+  }
+  
+  function showQuickSuccess() {
+    const successMsg = document.getElementById('quick-success');
+    const errorMsg = document.getElementById('quick-error');
+    successMsg?.classList.remove('hidden');
+    errorMsg?.classList.add('hidden');
+    setTimeout(() => {
+      successMsg?.classList.add('hidden');
+    }, 5000);
+  }
+  
+  function showQuickError(message: string) {
+    const successMsg = document.getElementById('quick-success');
+    const errorMsg = document.getElementById('quick-error');
+    if (errorMsg) {
+      errorMsg.textContent = `❌ ${message}`;
+      errorMsg.classList.remove('hidden');
+    }
+    successMsg?.classList.add('hidden');
+    setTimeout(() => {
+      errorMsg?.classList.add('hidden');
+    }, 5000);
+  }
+  
+  // Enter key support
+  document.getElementById('quick-email')?.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      quickSubscribe();
+    }
+  });
+</script>
+
+<style>
+  /* Quick signup specific styles */
+  #quick-email:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.1);
+  }
+</style>

@@ -1,0 +1,222 @@
+---
+// Graceful Degradation Component
+// Provides fallbacks for JavaScript-dependent features
+
+export interface Props {
+  feature: 'search' | 'theme-toggle' | 'copy-button' | 'newsletter' | 'custom';
+  fallbackText?: string;
+  showFallback?: boolean;
+}
+
+const { 
+  feature, 
+  fallbackText,
+  showFallback = true 
+} = Astro.props;
+
+// Default fallback messages for different features
+const defaultFallbacks = {
+  search: 'การค้นหาต้องใช้ JavaScript กรุณาเปิดใช้งาน JavaScript หรือใช้การกรองตามหมวดหมู่แทน',
+  'theme-toggle': 'การเปลี่ยน theme ต้องใช้ JavaScript กรุณาใช้การตั้งค่าของเบราว์เซอร์แทน',
+  'copy-button': 'การคัดลอกต้องใช้ JavaScript กรุณาเลือกและคัดลอกข้อความด้วยตนเอง',
+  newsletter: 'การสมัคร Newsletter ต้องใช้ JavaScript กรุณาส่งอีเมลไปที่ hello@techgloss.dev แทน',
+  custom: fallbackText || 'ฟีเจอร์นี้ต้องใช้ JavaScript'
+};
+
+const message = fallbackText || defaultFallbacks[feature];
+---
+
+<!-- Main content (requires JavaScript) -->
+<div class="js-required" data-feature={feature}>
+  <slot />
+</div>
+
+<!-- Fallback content (shown when JavaScript is disabled) -->
+{showFallback && (
+  <noscript>
+    <div class="no-js-fallback bg-yellow-50 border border-yellow-200 rounded-lg p-4 my-4">
+      <div class="flex items-start">
+        <div class="flex-shrink-0">
+          <span class="text-yellow-600 text-xl">⚠️</span>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-yellow-800">
+            JavaScript ถูกปิดใช้งาน
+          </h3>
+          <p class="text-sm text-yellow-700 mt-1">
+            {message}
+          </p>
+          
+          {feature === 'search' && (
+            <div class="mt-3">
+              <p class="text-sm text-yellow-700 mb-2">ทางเลือกอื่น:</p>
+              <ul class="text-sm text-yellow-700 list-disc list-inside space-y-1">
+                <li>ใช้การกรองตามหมวดหมู่ด้านล่าง</li>
+                <li>เลื่อนดูคำศัพท์ทั้งหมด</li>
+                <li>ใช้ Ctrl+F เพื่อค้นหาในหน้า</li>
+              </ul>
+            </div>
+          )}
+          
+          {feature === 'theme-toggle' && (
+            <div class="mt-3">
+              <p class="text-sm text-yellow-700">
+                💡 เคล็ดลับ: ใช้การตั้งค่า Dark Mode ของเบราว์เซอร์หรือระบบปฏิบัติการ
+              </p>
+            </div>
+          )}
+          
+          {feature === 'newsletter' && (
+            <div class="mt-3">
+              <a 
+                href="mailto:hello@techgloss.dev?subject=Newsletter Subscription&body=สวัสดีครับ ผมต้องการสมัครรับ Newsletter จาก TechGloss"
+                class="inline-flex items-center text-sm bg-yellow-100 hover:bg-yellow-200 text-yellow-800 px-3 py-1 rounded transition-colors"
+              >
+                📧 ส่งอีเมลสมัคร
+              </a>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </noscript>
+)}
+
+<!-- Enhanced fallback for critical features -->
+{feature === 'search' && (
+  <div class="js-fallback-search hidden">
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 my-4">
+      <div class="flex items-start">
+        <div class="flex-shrink-0">
+          <span class="text-blue-600 text-xl">🔍</span>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-blue-800">
+            การค้นหาไม่พร้อมใช้งาน
+          </h3>
+          <p class="text-sm text-blue-700 mt-1">
+            เกิดข้อผิดพลาดในการโหลดระบบค้นหา กรุณาลองรีเฟรชหน้า หรือใช้วิธีอื่น
+          </p>
+          <div class="mt-3 flex gap-2">
+            <button 
+              onclick="window.location.reload()"
+              class="text-xs bg-blue-100 hover:bg-blue-200 text-blue-800 px-3 py-1 rounded transition-colors"
+            >
+              รีเฟรชหน้า
+            </button>
+            <button 
+              onclick="showBrowserSearch()"
+              class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-1 rounded transition-colors"
+            >
+              ใช้การค้นหาของเบราว์เซอร์
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
+<script define:vars={{ feature }}>
+  // Graceful degradation functionality
+  function setupGracefulDegradation() {
+    const jsRequired = document.querySelector(`[data-feature="${feature}"]`);
+    
+    if (!jsRequired) return;
+    
+    // Test if the feature is working
+    let isWorking = true;
+    
+    try {
+      // Feature-specific tests
+      switch (feature) {
+        case 'search':
+          // Test if search functionality is available
+          if (typeof window.Fuse === 'undefined' && !document.querySelector('[data-search-input]')) {
+            isWorking = false;
+          }
+          break;
+          
+        case 'theme-toggle':
+          // Test if theme toggle is working
+          if (!localStorage || typeof localStorage.getItem !== 'function') {
+            isWorking = false;
+          }
+          break;
+          
+        case 'copy-button':
+          // Test if clipboard API is available
+          if (!navigator.clipboard && !document.execCommand) {
+            isWorking = false;
+          }
+          break;
+          
+        case 'newsletter':
+          // Test if fetch API is available
+          if (typeof fetch === 'undefined') {
+            isWorking = false;
+          }
+          break;
+      }
+    } catch (error) {
+      isWorking = false;
+      console.warn(`Feature ${feature} is not working:`, error);
+    }
+    
+    // Show fallback if feature is not working
+    if (!isWorking) {
+      const fallback = document.querySelector(`.js-fallback-${feature}`);
+      if (fallback) {
+        fallback.classList.remove('hidden');
+      }
+    }
+  }
+  
+  // Browser search functionality
+  window.showBrowserSearch = function() {
+    const searchTerm = prompt('ใส่คำที่ต้องการค้นหา:');
+    if (searchTerm) {
+      // Use browser's find functionality
+      if (window.find) {
+        window.find(searchTerm);
+      } else {
+        alert('กรุณาใช้ Ctrl+F (หรือ Cmd+F บน Mac) เพื่อค้นหา: ' + searchTerm);
+      }
+    }
+  };
+  
+  // Initialize when DOM is loaded
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', setupGracefulDegradation);
+  } else {
+    setupGracefulDegradation();
+  }
+  
+  // Monitor for JavaScript errors related to this feature
+  window.addEventListener('error', (event) => {
+    if (event.message && event.message.includes(feature)) {
+      setupGracefulDegradation();
+    }
+  });
+</script>
+
+<style>
+  /* Ensure fallback content is properly styled */
+  .no-js-fallback {
+    /* Styles for no-JavaScript fallback */
+  }
+  
+  .js-fallback-search {
+    /* Styles for search fallback */
+  }
+  
+  /* Hide JavaScript-required content when JS is disabled */
+  .no-js .js-required {
+    display: none;
+  }
+  
+  /* Show fallback content when JS is disabled */
+  .no-js .no-js-fallback {
+    display: block !important;
+  }
+</style>
