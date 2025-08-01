@@ -95,7 +95,7 @@ const {
     <div class="min-h-full">
       <header class="bg-card shadow-sm border-b border-border" role="banner">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="grid grid-cols-3 items-center py-6" id="navigation">
+          <div class="flex items-center justify-between py-6" id="navigation">
             <div class="flex items-center space-x-3">
               <div
                 class="w-8 h-8 bg-primary rounded-lg flex items-center justify-center"
@@ -115,36 +115,37 @@ const {
                 Green Knowledge
               </span>
             </div>
-            <nav
-              class="flex items-center justify-center space-x-6"
-              role="navigation"
-              aria-label="เมนูหลัก"
-            >
-              <a
-                href="/"
-                class="text-foreground/80 hover:text-primary transition-colors font-medium focus-ring rounded-sm px-2 py-1"
-                aria-label="ไปหน้าแรก"
+
+            <div class="flex items-center space-x-6">
+              <nav
+                class="flex items-center space-x-6"
+                role="navigation"
+                aria-label="เมนูหลัก"
               >
-                หน้าแรก
-              </a>
-              <a
-                href="/newsletter"
-                class="text-foreground/80 hover:text-primary transition-colors font-medium flex items-center focus-ring rounded-sm px-2 py-1"
-                title="รับข่าวสารทางอีเมล"
-                aria-label="สมัครรับ Newsletter"
-              >
-                <span class="mr-1" aria-hidden="true">📧</span>
-                Newsletter
-              </a>
-              <a
-                href="/about"
-                class="text-foreground/80 hover:text-primary transition-colors font-medium focus-ring rounded-sm px-2 py-1"
-                aria-label="เกี่ยวกับ TechGloss"
-              >
-                เกี่ยวกับ
-              </a>
-            </nav>
-            <div class="flex justify-end">
+                <a
+                  href="/"
+                  class="text-foreground/80 hover:text-primary transition-colors font-medium focus-ring rounded-sm px-2 py-1 flex items-center"
+                  aria-label="ไปหน้าแรก"
+                >
+                  หน้าแรก
+                </a>
+                <a
+                  href="/newsletter"
+                  class="text-foreground/80 hover:text-primary transition-colors font-medium flex items-center focus-ring rounded-sm px-2 py-1"
+                  title="รับข่าวสารทางอีเมล"
+                  aria-label="สมัครรับ Newsletter"
+                >
+                  <span class="mr-1" aria-hidden="true">📧</span>
+                  Newsletter
+                </a>
+                <a
+                  href="/about"
+                  class="text-foreground/80 hover:text-primary transition-colors font-medium focus-ring rounded-sm px-2 py-1 flex items-center"
+                  aria-label="เกี่ยวกับ TechGloss"
+                >
+                  เกี่ยวกับ
+                </a>
+              </nav>
               <ThemeToggle />
             </div>
           </div>

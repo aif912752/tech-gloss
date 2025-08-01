@@ -123,17 +123,21 @@
   - _Requirements: 2.1, 3.4_
 
 - [x] 13. พัฒนาฟีเจอร์การเข้าถึง
-
-
-
   - เพิ่ม ARIA labels และโครงสร้าง HTML ที่มีความหมายที่เหมาะสม
   - พัฒนาการนำทางด้วยคีย์บอร์ดสำหรับการค้นหาและองค์ประกอบแบบ interactive
   - รวมการจัดการ focus และการสนับสนุน screen reader
   - เพิ่ม skip links และลำดับชั้น heading ที่เหมาะสม
   - _Requirements: 6.5_
 
-- [ ] 14. เขียนการทดสอบที่ครอบคลุม
+- [-] 14. เขียนการทดสอบที่ครอบคลุม
+
+
+
+
+
 - [ ] 14.1 สร้าง unit tests สำหรับ components
+
+
   - เขียนการทดสอบสำหรับ GlossaryCard, SearchBar และ RelatedLinks components
   - ทดสอบการตรวจสอบ content collection schema
   - เพิ่มการทดสอบสำหรับ utility functions และตรรกะการค้นหา

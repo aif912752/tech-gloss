@@ -101,7 +101,9 @@ export function highlightSearchTerms(text: string, query: string): string {
   if (!query.trim()) return text;
   
   const searchTerm = query.trim();
-  const regex = new RegExp(`(${searchTerm})`, 'gi');
+  // Escape special regex characters
+  const escapedTerm = searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const regex = new RegExp(`(${escapedTerm})`, 'gi');
   
   return text.replace(regex, '<mark class="bg-primary/20 text-primary px-1 rounded">$1</mark>');
 }
