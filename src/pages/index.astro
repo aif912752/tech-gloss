@@ -4,6 +4,7 @@ import GlossaryCard from "../components/GlossaryCard.astro";
 import SimpleSearch from "../components/SimpleSearch.astro";
 import NewsletterSignup from "../components/NewsletterSignup.astro";
 import { getCollection } from "astro:content";
+import logoImage from "../assets/logo2-remove-bg.png";
 
 // Get all glossary entries
 const glossaryEntries = await getCollection("glossary");
@@ -49,7 +50,7 @@ const totalCategories = categories.length;
             class="w-72   flex items-center justify-center  p-3"
           >
             <img 
-              src="/src/assets/logo2-remove-bg.png" 
+              src={logoImage.src} 
               alt="TechGloss Logo" 
               class="w-full h-full object-contain"
             />
