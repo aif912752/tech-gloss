@@ -1,0 +1,789 @@
+---
+// Optimized SearchBar component with lazy loading and code splitting
+import GracefulDegradation from "./GracefulDegradation.astro";
+
+export interface Props {
+  placeholder?: string;
+  onSearch?: string;
+  showSuggestions?: boolean;
+  maxResults?: number;
+  lazyLoad?: boolean;
+}
+
+const {
+  placeholder = "ค้นหาคำศัพท์... เช่น API, JSON, React",
+  onSearch,
+  showSuggestions = true,
+  maxResults = 10,
+  lazyLoad = true,
+} = Astro.props;
+
+const searchId = `search-${Math.random().toString(36).substring(2, 9)}`;
+---
+
+<GracefulDegradation feature="search">
+  <div
+    class="search-bar-container relative"
+    data-search-id={searchId}
+    data-lazy-load={lazyLoad}
+  >
+    <!-- Search Input -->
+    <div class="relative">
+      <div
+        class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none"
+      >
+        <svg
+          class="w-5 h-5 text-muted-foreground"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+      </div>
+
+      <input
+        type="text"
+        class="search-input w-full pl-12 pr-12 py-3 text-base border border-border rounded-xl focus:ring-2 focus:ring-ring focus:border-primary bg-input text-foreground placeholder:text-muted-foreground transition-all duration-200"
+        placeholder={placeholder}
+        autocomplete="off"
+        spellcheck="false"
+        data-search-input
+        id="search"
+        role="searchbox"
+        aria-label="ค้นหาคำศัพท์ทางเทคนิค"
+        aria-describedby="search-instructions"
+        aria-expanded="false"
+        aria-autocomplete="list"
+        aria-owns="search-results"
+      />
+
+      <!-- Clear button -->
+      <button
+        class="clear-button absolute inset-y-0 right-0 pr-4 flex items-center opacity-0 transition-opacity focus-ring rounded"
+        title="ล้างการค้นหา"
+        aria-label="ล้างการค้นหา"
+        data-clear-search
+        tabindex="-1"
+      >
+        <svg
+          class="w-5 h-5 text-muted-foreground hover:text-foreground"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+
+      <!-- Loading indicator -->
+      <div
+        class="loading-indicator absolute inset-y-0 right-0 pr-4 flex items-center opacity-0 transition-opacity"
+      >
+        <svg
+          class="w-5 h-5 text-primary animate-spin"
+          fill="none"
+          viewBox="0 0 24 24"
+        >
+          <circle
+            class="opacity-25"
+            cx="12"
+            cy="12"
+            r="10"
+            stroke="currentColor"
+            stroke-width="4"></circle>
+          <path
+            class="opacity-75"
+            fill="currentColor"
+            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+          ></path>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Search Results Dropdown -->
+    <div
+      class="search-results absolute top-full left-0 right-0 mt-2 bg-card border border-border rounded-xl shadow-lg z-50 max-h-96 overflow-y-auto hidden"
+      id="search-results"
+      role="listbox"
+      aria-label="ผลการค้นหา"
+    >
+      <div
+        class="search-results-content"
+        role="group"
+        aria-label="รายการผลการค้นหา"
+      >
+      </div>
+
+      <!-- No results message -->
+      <div class="no-results hidden p-4 text-center text-muted-foreground">
+        <svg
+          class="w-8 h-8 mx-auto mb-2 opacity-50"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <p class="text-sm">ไม่พบผลการค้นหา</p>
+        <p class="text-xs mt-1">ลองใช้คำค้นหาอื่น</p>
+      </div>
+
+      <!-- Popular searches -->
+      <div
+        class="popular-searches p-4 border-t border-border"
+        role="group"
+        aria-labelledby="popular-searches-heading"
+      >
+        <h4
+          id="popular-searches-heading"
+          class="text-sm font-medium text-foreground mb-2"
+        >
+          คำค้นหายอดนิยม
+        </h4>
+        <div class="flex flex-wrap gap-2" role="list">
+          <button
+            class="popular-term px-2 py-1 text-xs bg-muted hover:bg-accent rounded-full transition-colors focus-ring"
+            data-term="API"
+            role="listitem"
+            aria-label="ค้นหา API">API</button
+          >
+          <button
+            class="popular-term px-2 py-1 text-xs bg-muted hover:bg-accent rounded-full transition-colors focus-ring"
+            data-term="JavaScript"
+            role="listitem"
+            aria-label="ค้นหา JavaScript">JavaScript</button
+          >
+          <button
+            class="popular-term px-2 py-1 text-xs bg-muted hover:bg-accent rounded-full transition-colors focus-ring"
+            data-term="React"
+            role="listitem"
+            aria-label="ค้นหา React">React</button
+          >
+          <button
+            class="popular-term px-2 py-1 text-xs bg-muted hover:bg-accent rounded-full transition-colors focus-ring"
+            data-term="JSON"
+            role="listitem"
+            aria-label="ค้นหา JSON">JSON</button
+          >
+        </div>
+      </div>
+    </div>
+
+    <!-- Search overlay (for mobile) -->
+    <div
+      class="search-overlay fixed inset-0 bg-background/80 backdrop-blur-sm z-40 hidden lg:hidden"
+    >
+    </div>
+
+    <!-- Search instructions for screen readers -->
+    <div id="search-instructions" class="sr-only">
+      ใช้ลูกศรขึ้นลงเพื่อเลือกผลการค้นหา กด Enter เพื่อเปิด หรือ Escape เพื่อปิด
+    </div>
+
+    <!-- Live region for search announcements -->
+    <div
+      id="search-live-region"
+      class="sr-only"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+    </div>
+  </div>
+</GracefulDegradation>
+
+<script>
+  // Optimized search with lazy loading and code splitting
+  class OptimizedSearchBar {
+    private container: HTMLElement;
+    private input: HTMLInputElement;
+    private results: HTMLElement;
+    private clearButton: HTMLElement;
+    private loadingIndicator: HTMLElement;
+    private fuse: any = null;
+    private searchIndex: any[] = [];
+    private debounceTimer: number = 0;
+    private currentQuery: string = "";
+    private selectedIndex: number = -1;
+    private liveRegion: HTMLElement | null = null;
+    private isInitialized: boolean = false;
+    private lazyLoad: boolean = true;
+
+    constructor(container: HTMLElement) {
+      console.log("SearchBarOptimized constructor called");
+      this.container = container;
+      this.input = container.querySelector(
+        "[data-search-input]"
+      ) as HTMLInputElement;
+      this.results = container.querySelector(".search-results") as HTMLElement;
+      this.clearButton = container.querySelector(
+        "[data-clear-search]"
+      ) as HTMLElement;
+      this.loadingIndicator = container.querySelector(
+        ".loading-indicator"
+      ) as HTMLElement;
+      this.lazyLoad = container.dataset.lazyLoad === "true";
+
+      console.log("Elements found:", {
+        input: !!this.input,
+        results: !!this.results,
+        clearButton: !!this.clearButton,
+        loadingIndicator: !!this.loadingIndicator,
+        lazyLoad: this.lazyLoad,
+      });
+
+      this.init();
+    }
+
+    async init() {
+      this.setupBasicEventListeners();
+
+      if (!this.lazyLoad) {
+        await this.initializeSearch();
+      }
+    }
+
+    setupBasicEventListeners() {
+      // Only initialize search when user first interacts
+      this.input.addEventListener(
+        "focus",
+        this.handleFirstInteraction.bind(this),
+        { once: true }
+      );
+      this.input.addEventListener(
+        "input",
+        this.handleFirstInteraction.bind(this),
+        { once: true }
+      );
+
+      // Setup basic clear functionality
+      this.clearButton.addEventListener("click", () => {
+        this.clearSearch();
+      });
+
+      this.setupLiveRegion();
+    }
+
+    async handleFirstInteraction() {
+      if (!this.isInitialized) {
+        await this.initializeSearch();
+      }
+    }
+
+    async initializeSearch() {
+      if (this.isInitialized) return;
+
+      console.log("Initializing search...");
+      this.showLoading();
+
+      try {
+        // Load search functionality dynamically
+        console.log("Loading Fuse.js and search index...");
+        const [fuseModule, searchIndex] = await Promise.all([
+          import("fuse.js"),
+          this.loadSearchIndex(),
+        ]);
+
+        const Fuse = fuseModule.default || fuseModule;
+        console.log("Fuse.js loaded:", typeof Fuse);
+
+        this.searchIndex = searchIndex;
+        console.log("Search index set:", this.searchIndex.length, "items");
+
+        if (this.searchIndex.length === 0) {
+          console.warn("Search index is empty, using fallback search");
+          this.setupFallbackSearch();
+          return;
+        }
+
+        this.fuse = new Fuse(this.searchIndex, {
+          keys: [
+            { name: "title", weight: 0.4 },
+            { name: "description", weight: 0.3 },
+            { name: "category", weight: 0.2 },
+            { name: "tags", weight: 0.1 },
+          ],
+          threshold: 0.3,
+          includeScore: true,
+          includeMatches: true,
+        });
+
+        console.log("Fuse.js initialized successfully");
+        this.setupAdvancedEventListeners();
+        this.isInitialized = true;
+
+        // If there's already a value, perform search
+        if (this.input.value) {
+          this.handleSearch(this.input.value);
+        } else {
+          this.showPopularSearches();
+        }
+      } catch (error) {
+        console.error("Failed to initialize search:", error);
+        this.setupFallbackSearch();
+      } finally {
+        this.hideLoading();
+      }
+    }
+
+    async loadSearchIndex(): Promise<any[]> {
+      try {
+        console.log("Loading search index...");
+        const response = await fetch("/api/search-index.json");
+        console.log("Search index response status:", response.status);
+
+        if (!response.ok) {
+          throw new Error(
+            `Failed to fetch search index: ${response.status} ${response.statusText}`
+          );
+        }
+
+        const data = await response.json();
+        console.log("Search index loaded:", data.length, "items");
+        return data;
+      } catch (error) {
+        console.error("Failed to load search index:", error);
+        return [];
+      }
+    }
+
+    setupAdvancedEventListeners() {
+      // Input events
+      this.input.addEventListener("input", (e) => {
+        const query = (e.target as HTMLInputElement).value;
+        this.handleSearch(query);
+      });
+
+      this.input.addEventListener("focus", () => {
+        if (this.currentQuery) {
+          this.showResults();
+        } else {
+          this.showPopularSearches();
+        }
+        this.input.setAttribute("aria-expanded", "true");
+      });
+
+      // Popular terms
+      this.container.addEventListener("click", (e) => {
+        const target = e.target as HTMLElement;
+        if (target.classList.contains("popular-term")) {
+          const term = target.dataset.term;
+          if (term) {
+            this.input.value = term;
+            this.handleSearch(term);
+          }
+        }
+      });
+
+      // Click outside to close
+      document.addEventListener("click", (e) => {
+        if (!this.container.contains(e.target as Node)) {
+          this.hideResults();
+        }
+      });
+
+      this.setupKeyboardNavigation();
+    }
+
+    setupFallbackSearch() {
+      console.log("Setting up fallback search...");
+      this.isInitialized = true; // Mark as initialized even with fallback
+
+      // Basic search without Fuse.js
+      this.input.addEventListener("input", (e) => {
+        const query = (e.target as HTMLInputElement).value;
+        console.log("Fallback search query:", query);
+        this.performBasicSearch(query);
+      });
+
+      this.setupAdvancedEventListeners();
+    }
+
+    performBasicSearch(query: string) {
+      console.log("Performing basic search for:", query);
+
+      if (!query.trim()) {
+        this.showPopularSearches();
+        return;
+      }
+
+      if (!this.searchIndex || this.searchIndex.length === 0) {
+        console.warn("Search index is empty");
+        this.displayResults([], query);
+        return;
+      }
+
+      // Simple text matching fallback
+      const searchTerm = query.toLowerCase();
+      const results = this.searchIndex
+        .filter(
+          (item) =>
+            item.title.toLowerCase().includes(searchTerm) ||
+            item.description.toLowerCase().includes(searchTerm) ||
+            item.category.toLowerCase().includes(searchTerm) ||
+            (item.tags &&
+              item.tags.some((tag: string) =>
+                tag.toLowerCase().includes(searchTerm)
+              ))
+        )
+        .map((item) => ({ item }));
+
+      console.log("Basic search results:", results.length);
+      this.displayResults(results, query);
+    }
+
+    setupKeyboardNavigation() {
+      this.input.addEventListener("keydown", (e) => {
+        const resultItems = this.results.querySelectorAll(
+          ".search-result-item"
+        );
+
+        switch (e.key) {
+          case "ArrowDown":
+            e.preventDefault();
+            this.selectedIndex = Math.min(
+              this.selectedIndex + 1,
+              resultItems.length - 1
+            );
+            this.updateSelection(resultItems);
+            break;
+
+          case "ArrowUp":
+            e.preventDefault();
+            this.selectedIndex = Math.max(this.selectedIndex - 1, -1);
+            this.updateSelection(resultItems);
+            break;
+
+          case "Enter":
+            e.preventDefault();
+            if (this.selectedIndex >= 0 && resultItems[this.selectedIndex]) {
+              const link = resultItems[this.selectedIndex].querySelector(
+                "a"
+              ) as HTMLAnchorElement;
+              if (link) link.click();
+            }
+            break;
+
+          case "Escape":
+            this.hideResults();
+            this.input.blur();
+            break;
+        }
+      });
+    }
+
+    handleSearch(query: string) {
+      this.currentQuery = query;
+
+      // Show/hide clear button
+      if (query) {
+        this.clearButton.style.opacity = "1";
+        this.clearButton.setAttribute("tabindex", "0");
+      } else {
+        this.clearButton.style.opacity = "0";
+        this.clearButton.setAttribute("tabindex", "-1");
+      }
+
+      // Debounce search
+      clearTimeout(this.debounceTimer);
+      this.debounceTimer = window.setTimeout(() => {
+        this.performSearch(query);
+      }, 300);
+    }
+
+    performSearch(query: string) {
+      if (!query.trim()) {
+        this.showPopularSearches();
+        return;
+      }
+
+      if (!this.isInitialized) {
+        this.performBasicSearch(query);
+        return;
+      }
+
+      this.showLoading();
+
+      // Use requestIdleCallback for better performance
+      const performSearchWork = () => {
+        const results = this.fuse ? this.fuse.search(query) : [];
+        this.displayResults(results, query);
+        this.hideLoading();
+
+        const resultCount = results.length;
+        if (resultCount === 0) {
+          this.announceLiveRegion("ไม่พบผลการค้นหา");
+        } else {
+          this.announceLiveRegion(`พบผลการค้นหา ${resultCount} รายการ`);
+        }
+      };
+
+      if ("requestIdleCallback" in window) {
+        requestIdleCallback(performSearchWork);
+      } else {
+        setTimeout(performSearchWork, 0);
+      }
+    }
+
+    displayResults(results: any[], query: string) {
+      const content = this.results.querySelector(
+        ".search-results-content"
+      ) as HTMLElement;
+      const noResults = this.results.querySelector(
+        ".no-results"
+      ) as HTMLElement;
+      const popularSearches = this.results.querySelector(
+        ".popular-searches"
+      ) as HTMLElement;
+
+      if (results.length === 0) {
+        content.innerHTML = "";
+        noResults.classList.remove("hidden");
+        popularSearches.classList.add("hidden");
+      } else {
+        noResults.classList.add("hidden");
+        popularSearches.classList.add("hidden");
+
+        // Use document fragment for better performance
+        const fragment = document.createDocumentFragment();
+        const maxResults = Math.min(results.length, 10);
+
+        for (let i = 0; i < maxResults; i++) {
+          const result = results[i];
+          const item = result.item;
+          const highlightedTitle = this.highlightMatches(item.title, query);
+          const highlightedDescription = this.highlightMatches(
+            item.description,
+            query
+          );
+
+          const resultElement = document.createElement("a");
+          resultElement.href = `/glossary/${item.slug}`;
+          resultElement.className = `search-result-item block p-4 hover:bg-accent transition-colors focus-ring rounded ${i === 0 ? "border-t-0" : "border-t border-border"}`;
+          resultElement.setAttribute("role", "option");
+          resultElement.setAttribute("aria-selected", "false");
+          resultElement.setAttribute(
+            "aria-label",
+            `${item.title} - ${item.description}`
+          );
+          resultElement.setAttribute("tabindex", "-1");
+
+          resultElement.innerHTML = `
+            <div class="flex items-start justify-between">
+              <div class="flex-1">
+                <h4 class="font-semibold text-foreground mb-1">${highlightedTitle}</h4>
+                <p class="text-sm text-muted-foreground mb-2 line-clamp-2">${highlightedDescription}</p>
+                <div class="flex items-center gap-2">
+                  <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-primary/10 text-primary border border-primary/20">
+                    ${item.category}
+                  </span>
+                  ${item.tags
+                    .slice(0, 2)
+                    .map(
+                      (tag: string) => `
+                    <span class="inline-flex items-center px-1.5 py-0.5 rounded text-xs bg-muted text-muted-foreground">
+                      #${tag}
+                    </span>
+                  `
+                    )
+                    .join("")}
+                </div>
+              </div>
+              <svg class="w-4 h-4 text-muted-foreground flex-shrink-0 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+              </svg>
+            </div>
+          `;
+
+          fragment.appendChild(resultElement);
+        }
+
+        content.innerHTML = "";
+        content.appendChild(fragment);
+      }
+
+      this.showResults();
+      this.selectedIndex = -1;
+    }
+
+    highlightMatches(text: string, query: string): string {
+      if (!query) return text;
+
+      const regex = new RegExp(
+        `(${query.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")})`,
+        "gi"
+      );
+      return text.replace(
+        regex,
+        '<mark class="bg-primary/20 text-primary px-0.5 rounded">$1</mark>'
+      );
+    }
+
+    showPopularSearches() {
+      const content = this.results.querySelector(
+        ".search-results-content"
+      ) as HTMLElement;
+      const noResults = this.results.querySelector(
+        ".no-results"
+      ) as HTMLElement;
+      const popularSearches = this.results.querySelector(
+        ".popular-searches"
+      ) as HTMLElement;
+
+      content.innerHTML = "";
+      noResults.classList.add("hidden");
+      popularSearches.classList.remove("hidden");
+
+      this.showResults();
+    }
+
+    updateSelection(items: NodeListOf<Element>) {
+      items.forEach((item, index) => {
+        if (index === this.selectedIndex) {
+          item.classList.add("bg-accent");
+          item.setAttribute("aria-selected", "true");
+          const title = item.querySelector("h4")?.textContent || "";
+          this.announceLiveRegion(`เลือก ${title}`);
+        } else {
+          item.classList.remove("bg-accent");
+          item.setAttribute("aria-selected", "false");
+        }
+      });
+    }
+
+    showResults() {
+      this.results.classList.remove("hidden");
+      this.input.setAttribute("aria-expanded", "true");
+    }
+
+    hideResults() {
+      this.results.classList.add("hidden");
+      this.input.setAttribute("aria-expanded", "false");
+      this.selectedIndex = -1;
+
+      const items = this.results.querySelectorAll(".search-result-item");
+      items.forEach((item) => {
+        item.setAttribute("aria-selected", "false");
+        item.classList.remove("bg-accent");
+      });
+    }
+
+    showLoading() {
+      this.loadingIndicator.style.opacity = "1";
+    }
+
+    hideLoading() {
+      this.loadingIndicator.style.opacity = "0";
+    }
+
+    clearSearch() {
+      this.input.value = "";
+      this.currentQuery = "";
+      this.clearButton.style.opacity = "0";
+      this.clearButton.setAttribute("tabindex", "-1");
+      this.hideResults();
+      this.input.focus();
+      this.announceLiveRegion("ล้างการค้นหาแล้ว");
+    }
+
+    setupLiveRegion() {
+      this.liveRegion = document.getElementById("search-live-region");
+    }
+
+    announceLiveRegion(message: string) {
+      if (this.liveRegion) {
+        this.liveRegion.textContent = message;
+      }
+    }
+  }
+
+  // Initialize optimized search bars
+  document.addEventListener("DOMContentLoaded", () => {
+    console.log("DOM loaded, looking for search bars...");
+    const searchBars = document.querySelectorAll(".search-bar-container");
+    console.log("Found search bars:", searchBars.length);
+
+    searchBars.forEach((container, index) => {
+      console.log(`Initializing search bar ${index + 1}`);
+      new OptimizedSearchBar(container as HTMLElement);
+    });
+  });
+</script>
+
+<style>
+  /* Optimized animations with will-change for better performance */
+  .search-input:focus {
+    will-change: transform, box-shadow;
+    transform: translateY(-1px);
+    box-shadow:
+      0 10px 25px -5px rgba(34, 197, 94, 0.1),
+      0 10px 10px -5px rgba(34, 197, 94, 0.04);
+  }
+
+  .search-results {
+    will-change: opacity, transform;
+    animation: slideDown 0.2s ease-out;
+  }
+
+  @keyframes slideDown {
+    from {
+      opacity: 0;
+      transform: translateY(-10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Optimized scrollbar */
+  .search-results::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .search-results::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .search-results::-webkit-scrollbar-thumb {
+    background: oklch(0.88 0.02 125);
+    border-radius: 3px;
+  }
+
+  .search-results::-webkit-scrollbar-thumb:hover {
+    background: oklch(0.45 0.02 135);
+  }
+
+  /* Line clamp optimization */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Performance optimizations */
+  .search-result-item {
+    contain: layout style;
+  }
+
+  .loading-indicator {
+    will-change: opacity;
+  }
+
+  .clear-button {
+    will-change: opacity;
+  }
+</style>

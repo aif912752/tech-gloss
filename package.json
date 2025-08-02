@@ -6,12 +6,14 @@
     "dev": "astro dev",
     "build": "npm run validate && npm run test && astro build",
     "build:skip-validation": "astro build",
+    "build:analyze": "npm run build && npm run analyze-bundle",
     "preview": "astro preview",
     "validate": "node scripts/validate.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
+    "analyze-bundle": "node scripts/analyze-bundle.js",
     "astro": "astro"
   },
   "dependencies": {

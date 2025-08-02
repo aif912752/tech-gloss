@@ -26,7 +26,7 @@ const getCategoryColor = (category: string) => {
 const categoryColorClass = getCategoryColor(category);
 ---
 
-<article class="glossary-card group animate-fade-in" role="listitem">
+<article class="glossary-card group animate-fade-in" role="listitem" data-prefetch-on-hover data-prefetch-url={`/glossary/${slug}`} data-intelligent-prefetch>
   <div class="flex items-start justify-between mb-3">
     <div class="flex-1">
       <h3 class="text-heading-3 text-foreground group-hover:text-primary transition-colors mb-2 line-clamp-2">
@@ -34,6 +34,7 @@ const categoryColorClass = getCategoryColor(category);
           href={`/glossary/${slug}`} 
           class="hover:underline focus-ring rounded-sm"
           aria-label={`อ่านเพิ่มเติมเกี่ยวกับ ${title} ในหมวด ${category}`}
+          data-prefetch-on-hover
         >
           {title}
         </a>
@@ -78,6 +79,7 @@ const categoryColorClass = getCategoryColor(category);
       href={`/glossary/${slug}`} 
       class="inline-flex items-center text-sm font-medium text-primary hover:text-primary/80 transition-colors focus-ring rounded-sm"
       aria-label={`อ่านเพิ่มเติมเกี่ยวกับ ${title}`}
+      data-prefetch-on-hover
     >
       อ่านเพิ่มเติม
       <svg class="w-4 h-4 ml-1 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">

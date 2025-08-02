@@ -68,7 +68,16 @@ const {
       allTerms={allTerms}
       structuredDataType={structuredDataType}
     />
+    <!-- Preload critical resources conditionally -->
+    <!-- Search index will be loaded when needed by search component -->
+    <link rel="dns-prefetch" href="//fonts.googleapis.com" />
+
+    <!-- Performance optimizations -->
+    <meta name="theme-color" content="#22c55e" />
+    <meta name="color-scheme" content="light dark" />
+
     <script is:inline>
+      // Optimized theme detection with performance hints
       const getTheme = () => {
         if (
           typeof localStorage !== "undefined" &&
@@ -86,6 +95,17 @@ const {
       };
       const theme = getTheme();
       if (theme === "dark") document.documentElement.classList.add("dark");
+
+      // Performance optimization: Preload critical resources
+      if ("requestIdleCallback" in window) {
+        requestIdleCallback(() => {
+          // Preload search functionality when browser is idle
+          const link = document.createElement("link");
+          link.rel = "modulepreload";
+          link.href = "/src/utils/search.ts";
+          document.head.appendChild(link);
+        });
+      }
     </script>
   </head>
   <body class="min-h-full bg-background text-foreground font-sans antialiased">
@@ -185,5 +205,8 @@ const {
         </div>
       </footer>
     </div>
+
+    <!-- Initialize performance utilities -->
+    <script src="../scripts/init-performance.ts"></script>
   </body>
 </html>

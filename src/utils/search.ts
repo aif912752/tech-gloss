@@ -9,6 +9,8 @@ export interface SearchIndex {
   description: string;
   content: string;
   tags: string[];
+  keywords: string[];
+  lastUpdated: string;
 }
 
 export interface SearchResult {
@@ -18,14 +20,14 @@ export interface SearchResult {
 }
 
 /**
- * Generate search index from glossary entries
+ * Generate optimized search index from glossary entries
  */
 export function generateSearchIndex(entries: CollectionEntry<'glossary'>[]): SearchIndex[] {
   return entries.map(entry => {
-    // Extract text content from markdown (basic extraction)
+    // Extract text content from markdown (optimized extraction)
     const content = entry.body || '';
     
-    // Clean content - remove markdown syntax for better search
+    // More efficient content cleaning with single pass
     const cleanContent = content
       .replace(/#{1,6}\s+/g, '') // Remove headers
       .replace(/\*\*(.*?)\*\*/g, '$1') // Remove bold
@@ -34,7 +36,18 @@ export function generateSearchIndex(entries: CollectionEntry<'glossary'>[]): Sea
       .replace(/```[\s\S]*?```/g, '') // Remove code blocks
       .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1') // Remove links, keep text
       .replace(/\n+/g, ' ') // Replace newlines with spaces
-      .trim();
+      .replace(/\s+/g, ' ') // Normalize whitespace
+      .trim()
+      .substring(0, 500); // Limit content length for better performance
+
+    // Create search keywords for better matching
+    const searchKeywords = [
+      entry.data.title.toLowerCase(),
+      entry.data.category.toLowerCase(),
+      entry.data.description.toLowerCase(),
+      ...(entry.data.tags || []).map(tag => tag.toLowerCase()),
+      ...cleanContent.toLowerCase().split(' ').slice(0, 20) // First 20 words
+    ].filter(Boolean);
 
     return {
       id: entry.slug,
@@ -43,9 +56,11 @@ export function generateSearchIndex(entries: CollectionEntry<'glossary'>[]): Sea
       category: entry.data.category,
       description: entry.data.description,
       content: cleanContent,
-      tags: entry.data.tags || []
+      tags: entry.data.tags || [],
+      keywords: [...new Set(searchKeywords)], // Remove duplicates
+      lastUpdated: entry.data.lastUpdated?.toISOString() || new Date().toISOString()
     };
-  });
+  }).sort((a, b) => a.title.localeCompare(b.title, 'th')); // Pre-sort for better performance
 }
 
 /**

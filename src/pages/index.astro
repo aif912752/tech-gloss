@@ -1,7 +1,7 @@
 ---
 import BaseLayout from "../layouts/BaseLayout.astro";
 import GlossaryCard from "../components/GlossaryCard.astro";
-import SearchBar from "../components/SearchBar.astro";
+import SimpleSearch from "../components/SimpleSearch.astro";
 import NewsletterSignup from "../components/NewsletterSignup.astro";
 import { getCollection } from "astro:content";
 
@@ -87,10 +87,8 @@ const totalCategories = categories.length;
     <section class="mb-12" aria-labelledby="search-section-heading">
       <h2 id="search-section-heading" class="sr-only">ค้นหาและกรองคำศัพท์</h2>
       <div class="max-w-2xl mx-auto mb-8">
-        <SearchBar
+        <SimpleSearch
           placeholder="ค้นหาคำศัพท์... เช่น API, JSON, React"
-          showSuggestions={true}
-          maxResults={8}
         />
       </div>
 

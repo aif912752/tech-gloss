@@ -1,78 +1,201 @@
-# Requirements Document
+# เอกสารความต้องการ
 
-## Introduction
+## บทนำ
 
-TechGloss is a developer glossary website built with Astro that provides a comprehensive collection of technical terms for developers. The platform aims to help beginners and experienced developers understand various technical concepts through easy-to-understand explanations, code examples, and related term connections. The website will be SEO-friendly, searchable, and designed for optimal performance with Astro's HTML-first approach.
+TechGloss เป็นเว็บไซต์พจนานุกรมสำหรับนักพัฒนาเว็บที่สร้างด้วย Astro ซึ่งรวมการสร้างเว็บไซต์แบบสถิตกับฟีเจอร์ชุมชนแบบโต้ตอบ ระบบให้บริการคอลเลกชันศัพท์เทคนิคที่ครอบคลุมสำหรับนักพัฒนา พร้อมเนื้อหาที่สร้างโดยผู้ใช้ รวมถึงความคิดเห็น คำถาม-คำตอบ และการมีส่วนร่วมของชุมชน เว็บไซต์จะเป็นมิตรกับ SEO ค้นหาได้ และออกแบบเพื่อประสิทธิภาพที่เหมาะสม ในขณะที่ส่งเสริมการมีส่วนร่วมของชุมชนผ่านฟีเจอร์โต้ตอบที่ขับเคลื่อนด้วย Supabase
 
-## Requirements
+## ความต้องการ
 
-### Requirement 1
+### ความต้องการที่ 1
 
-**User Story:** As a developer, I want to browse a comprehensive list of technical terms, so that I can discover and learn about various development concepts.
+**เรื่องราวผู้ใช้:** ในฐานะนักพัฒนา ฉันต้องการเรียกดูรายการศัพท์เทคนิคที่ครอบคลุม เพื่อให้ฉันสามารถค้นพบและเรียนรู้เกี่ยวกับแนวคิดการพัฒนาต่างๆ
 
-#### Acceptance Criteria
+#### เกณฑ์การยอมรับ
 
-1. WHEN a user visits the homepage THEN the system SHALL display a grid/list of all available glossary terms
-2. WHEN displaying terms THEN each term SHALL show its title, category, and brief description
-3. WHEN terms are displayed THEN they SHALL be organized in a visually appealing card layout
-4. IF there are multiple categories THEN the system SHALL allow filtering by category
+1. เมื่อผู้ใช้เยี่ยมชมหน้าแรก ระบบจะแสดงตาราง/รายการศัพท์ในพจนานุกรมทั้งหมดที่มีอยู่
+2. เมื่อแสดงศัพท์ แต่ละศัพท์จะแสดงชื่อ หมวดหมู่ และคำอธิบายสั้นๆ
+3. เมื่อแสดงศัพท์ จะจัดเรียงในรูปแบบการ์ดที่ดูสวยงาม
+4. หากมีหลายหมวดหมู่ ระบบจะอนุญาตให้กรองตามหมวดหมู่
 
-### Requirement 2
+### ความต้องการที่ 2
 
-**User Story:** As a developer, I want to view detailed information about a specific technical term, so that I can understand its meaning, usage, and related concepts.
+**เรื่องราวผู้ใช้:** ในฐานะนักพัฒนา ฉันต้องการดูข้อมูลรายละเอียดเกี่ยวกับศัพท์เทคนิคเฉพาะ เพื่อให้ฉันเข้าใจความหมาย การใช้งาน และแนวคิดที่เกี่ยวข้อง
 
-#### Acceptance Criteria
+#### เกณฑ์การยอมรับ
 
-1. WHEN a user clicks on a glossary term THEN the system SHALL navigate to a dedicated page for that term
-2. WHEN viewing a term page THEN the system SHALL display the term title, detailed explanation, code examples, and related terms
-3. WHEN on a term page THEN the system SHALL provide navigation back to the main glossary
-4. IF a term has related terms THEN the system SHALL display clickable links to those related terms
-5. WHEN viewing code examples THEN the system SHALL provide syntax highlighting and copy functionality
+1. เมื่อผู้ใช้คลิกที่ศัพท์ในพจนานุกรม ระบบจะนำทางไปยังหน้าเฉพาะสำหรับศัพท์นั้น
+2. เมื่อดูหน้าศัพท์ ระบบจะแสดงชื่อศัพท์ คำอธิบายรายละเอียด ตัวอย่างโค้ด และศัพท์ที่เกี่ยวข้อง
+3. เมื่ออยู่ในหน้าศัพท์ ระบบจะให้การนำทางกลับไปยังพจนานุกรมหลัก
+4. หากศัพท์มีศัพท์ที่เกี่ยวข้อง ระบบจะแสดงลิงก์ที่คลิกได้ไปยังศัพท์เหล่านั้น
+5. เมื่อดูตัวอย่างโค้ด ระบบจะให้การไฮไลท์ไวยากรณ์และฟังก์ชันคัดลอก
 
-### Requirement 3
+### ความต้องการที่ 3
 
-**User Story:** As a developer, I want to search for specific terms, so that I can quickly find the information I need without browsing through all terms.
+**เรื่องราวผู้ใช้:** ในฐานะนักพัฒนา ฉันต้องการค้นหาศัพท์เฉพาะ เพื่อให้ฉันสามารถหาข้อมูลที่ต้องการได้อย่างรวดเร็วโดยไม่ต้องเรียกดูศัพท์ทั้งหมด
 
-#### Acceptance Criteria
+#### เกณฑ์การยอมรับ
 
-1. WHEN a user accesses the search functionality THEN the system SHALL provide a search input field
-2. WHEN a user types in the search field THEN the system SHALL filter results in real-time
-3. WHEN search results are displayed THEN they SHALL highlight matching terms and show relevant snippets
-4. IF no results are found THEN the system SHALL display a helpful "no results" message
-5. WHEN search is performed THEN the system SHALL maintain fast performance without page reloads
+1. เมื่อผู้ใช้เข้าถึงฟังก์ชันค้นหา ระบบจะให้ช่องกรอกข้อมูลค้นหา
+2. เมื่อผู้ใช้พิมพ์ในช่องค้นหา ระบบจะกรองผลลัพธ์แบบเรียลไทม์
+3. เมื่อแสดงผลการค้นหา จะไฮไลท์ศัพท์ที่ตรงกันและแสดงส่วนที่เกี่ยวข้อง
+4. หากไม่พบผลลัพธ์ ระบบจะแสดงข้อความ "ไม่พบผลลัพธ์" ที่เป็นประโยชน์
+5. เมื่อทำการค้นหา ระบบจะรักษาประสิทธิภาพที่รวดเร็วโดยไม่ต้องโหลดหน้าใหม่
 
-### Requirement 4
+### ความต้องการที่ 4
 
-**User Story:** As a content manager, I want to easily add and manage glossary terms, so that I can keep the glossary up-to-date and comprehensive.
+**เรื่องราวผู้ใช้:** ในฐานะผู้จัดการเนื้อหา ฉันต้องการเพิ่มและจัดการศัพท์ในพจนานุกรมได้ง่าย เพื่อให้ฉันสามารถรักษาพจนานุกรมให้ทันสมัยและครอบคลุม
 
-#### Acceptance Criteria
+#### เกณฑ์การยอมรับ
 
-1. WHEN adding new terms THEN the system SHALL support Markdown format for easy content creation
-2. WHEN creating a term THEN the system SHALL require title, slug, category, and content fields
-3. WHEN defining a term THEN the system SHALL allow optional related terms specification
-4. IF content is added THEN the system SHALL automatically generate the appropriate pages and navigation
-5. WHEN content is structured THEN the system SHALL use Astro Content Collections for type safety
+1. เมื่อเพิ่มศัพท์ใหม่ ระบบจะรองรับรูปแบบ Markdown สำหรับการสร้างเนื้อหาที่ง่าย
+2. เมื่อสร้างศัพท์ ระบบจะต้องการชื่อ slug หมวดหมู่ และฟิลด์เนื้อหา
+3. เมื่อกำหนดศัพท์ ระบบจะอนุญาตให้ระบุศัพท์ที่เกี่ยวข้องแบบเลือกได้
+4. หากเพิ่มเนื้อหา ระบบจะสร้างหน้าและการนำทางที่เหมาะสมโดยอัตโนมัติ
+5. เมื่อจัดโครงสร้างเนื้อหา ระบบจะใช้ Astro Content Collections สำหรับความปลอดภัยของประเภท
 
-### Requirement 5
+### ความต้องการที่ 5
 
-**User Story:** As a website visitor, I want the site to be fast and SEO-optimized, so that I can find information quickly and the site appears well in search results.
+**เรื่องราวผู้ใช้:** ในฐานะผู้เยี่ยมชมเว็บไซต์ ฉันต้องการให้ไซต์เร็วและปรับแต่งสำหรับ SEO เพื่อให้ฉันหาข้อมูลได้เร็วและไซต์ปรากฏในผลการค้นหาที่ดี
 
-#### Acceptance Criteria
+#### เกณฑ์การยอมรับ
 
-1. WHEN pages are loaded THEN the system SHALL generate static HTML for optimal performance
-2. WHEN search engines crawl the site THEN each term SHALL have proper meta tags and structured data
-3. WHEN pages are accessed THEN the system SHALL provide fast loading times through Astro's HTML-first approach
-4. IF users share links THEN the system SHALL provide proper Open Graph tags for social media
-5. WHEN the site is indexed THEN the system SHALL generate a sitemap.xml for search engines
+1. เมื่อโหลดหน้า ระบบจะสร้าง HTML แบบสถิตสำหรับประสิทธิภาพที่เหมาะสม
+2. เมื่อเครื่องมือค้นหาเข้าถึงไซต์ แต่ละศัพท์จะมี meta tags และ structured data ที่เหมาะสม
+3. เมื่อเข้าถึงหน้า ระบบจะให้เวลาการโหลดที่เร็วผ่านแนวทาง HTML-first ของ Astro
+4. หากผู้ใช้แชร์ลิงก์ ระบบจะให้ Open Graph tags ที่เหมาะสมสำหรับโซเชียลมีเดีย
+5. เมื่อทำการจัดทำดัชนีไซต์ ระบบจะสร้าง sitemap.xml สำหรับเครื่องมือค้นหา
 
-### Requirement 6
+### ความต้องการที่ 6
 
-**User Story:** As a user, I want additional features that enhance my browsing experience, so that I can use the glossary more effectively.
+**เรื่องราวผู้ใช้:** ในฐานะผู้ใช้ ฉันต้องการฟีเจอร์เพิ่มเติมที่เพิ่มประสบการณ์การเรียกดู เพื่อให้ฉันใช้พจนานุกรมได้อย่างมีประสิทธิภาพมากขึ้น
 
-#### Acceptance Criteria
+#### เกณฑ์การยอมรับ
 
-1. WHEN viewing code examples THEN the system SHALL provide a copy-to-clipboard button
-2. WHEN using the site THEN the system SHALL support both light and dark themes
-3. IF users want updates THEN the system SHALL provide an RSS feed for new terms
-4. WHEN analytics are needed THEN the system SHALL integrate privacy-friendly analytics
-5. WHEN accessibility is considered THEN the system SHALL meet basic accessibility standards
+1. เมื่อดูตัวอย่างโค้ด ระบบจะให้ปุ่มคัดลอกไปยังคลิปบอร์ด
+2. เมื่อใช้ไซต์ ระบบจะรองรับทั้งธีมสว่างและมืด
+3. หากผู้ใช้ต้องการอัปเดต ระบบจะให้ RSS feed สำหรับศัพท์ใหม่
+4. เมื่อต้องการการวิเคราะห์ ระบบจะรวมการวิเคราะห์ที่เป็นมิตรกับความเป็นส่วนตัว
+5. เมื่อพิจารณาการเข้าถึง ระบบจะตรงตามมาตรฐานการเข้าถึงพื้นฐาน
+
+### ความต้องการที่ 7
+
+**เรื่องราวผู้ใช้:** ในฐานะสมาชิกชุมชน ฉันต้องการแสดงความคิดเห็นเกี่ยวกับศัพท์ในพจนานุกรม เพื่อให้ฉันสามารถแบ่งปันข้อมูลเชิงลึกเพิ่มเติม ถามคำถาม หรือให้คำอธิบาย
+
+#### เกณฑ์การยอมรับ
+
+1. เมื่อดูหน้าศัพท์ ระบบจะแสดงส่วนความคิดเห็นด้านล่างเนื้อหาหลัก
+2. เมื่อผู้ใช้ได้รับการยืนยันตัวตน ระบบจะอนุญาตให้พวกเขาส่งความคิดเห็น
+3. เมื่อส่งความคิดเห็น ระบบจะรองรับการตอบกลับแบบ threaded
+4. เมื่อแสดงความคิดเห็น ระบบจะแสดงรูปโปรไฟล์ผู้ใช้ เวลา และจำนวนการโหวต
+5. หากผู้ใช้ไม่ได้รับการยืนยันตัวตน ระบบจะขอให้พวกเขาเข้าสู่ระบบเพื่อแสดงความคิดเห็น
+6. เมื่อส่งความคิดเห็น ระบบจะรองรับการจัดรูปแบบ Markdown
+7. เมื่อผู้ใช้โต้ตอบกับความคิดเห็น ระบบจะให้ฟังก์ชันการโหวตขึ้น/ลง
+
+### ความต้องการที่ 8
+
+**เรื่องราวผู้ใช้:** ในฐานะนักพัฒนา ฉันต้องการถามคำถามเกี่ยวกับศัพท์เฉพาะ เพื่อให้ฉันได้รับความช่วยเหลือเมื่อไม่เข้าใจแนวคิดอย่างเต็มที่
+
+#### เกณฑ์การยอมรับ
+
+1. เมื่อดูหน้าศัพท์ ระบบจะแสดงส่วนคำถาม-คำตอบ
+2. เมื่อผู้ใช้ได้รับการยืนยันตัวตน ระบบจะอนุญาตให้พวกเขาถามคำถาม
+3. เมื่อถามคำถาม ระบบจะแท็กอัตโนมัติกับศัพท์ปัจจุบัน
+4. เมื่อแสดงคำถาม ระบบจะแสดงสถานะคำถาม (แก้ไขแล้ว/ยังไม่แก้ไข)
+5. เมื่อผู้ใช้ตอบคำถาม ผู้เขียนคำถามจะสามารถทำเครื่องหมายคำตอบที่ดีที่สุดได้
+6. หากคำถามได้รับการแก้ไข ระบบจะระบุคำตอบที่ยอมรับอย่างชัดเจน
+7. เมื่อส่งคำถาม ระบบจะรองรับการจัดรูปแบบ Markdown
+
+### ความต้องการที่ 9
+
+**เรื่องราวผู้ใช้:** ในฐานะผู้มีส่วนร่วมในชุมชน ฉันต้องการส่งศัพท์ใหม่ในพจนานุกรม เพื่อให้ฉันสามารถช่วยขยายฐานความรู้ด้วยแนวคิดที่ขาดหายไป
+
+#### เกณฑ์การยอมรับ
+
+1. เมื่อผู้ใช้ได้รับการยืนยันตัวตน ระบบจะให้ฟอร์ม "ส่งศัพท์"
+2. เมื่อส่งศัพท์ ระบบจะต้องการชื่อ slug หมวดหมู่ คำอธิบาย และเนื้อหา
+3. เมื่อสร้างเนื้อหา ระบบจะรองรับ Markdown editor พร้อมตัวอย่าง
+4. เมื่อส่งศัพท์ ระบบจะตั้งสถานะเป็น "รอดำเนินการ" สำหรับการตรวจสอบ
+5. เมื่อศัพท์รอดำเนินการ ผู้ดูแลจะสามารถตรวจสอบและอนุมัติ/ปฏิเสธได้
+6. หากศัพท์ได้รับการอนุมัติ ระบบจะแจ้งผู้มีส่วนร่วมและเพิ่มเข้าในพจนานุกรม
+7. เมื่อศัพท์ถูกปฏิเสธ ระบบจะให้ข้อเสนอแนะแก่ผู้มีส่วนร่วม
+
+### ความต้องการที่ 10
+
+**เรื่องราวผู้ใช้:** ในฐานะผู้ใช้ ฉันต้องการยืนยันตัวตนได้ง่าย เพื่อให้ฉันสามารถมีส่วนร่วมในฟีเจอร์ชุมชนโดยไม่มีอุปสรรค
+
+#### เกณฑ์การยอมรับ
+
+1. เมื่อผู้ใช้ต้องการแสดงความคิดเห็นหรือมีส่วนร่วม ระบบจะให้การเข้าสู่ระบบ GitHub OAuth
+2. เมื่อผู้ใช้ยืนยันตัวตน ระบบจะสร้างโปรไฟล์ผู้ใช้โดยอัตโนมัติ
+3. เมื่อผู้ใช้ได้รับการยืนยันตัวตน ระบบจะแสดงรูปโปรไฟล์และชื่อผู้ใช้
+4. หากการยืนยันตัวตนล้มเหลว ระบบจะให้ข้อความแสดงข้อผิดพลาดที่ชัดเจน
+5. เมื่อผู้ใช้ออกจากระบบ ระบบจะล้างเซสชันและเปลี่ยนเส้นทางอย่างเหมาะสม
+6. เมื่อผู้ใช้กลับมา ระบบจะจำสถานะการยืนยันตัวตน
+
+### ความต้องการที่ 11
+
+**เรื่องราวผู้ใช้:** ในฐานะผู้ดูแล ฉันต้องการจัดการเนื้อหาชุมชน เพื่อให้ฉันสามารถรักษาคุณภาพและป้องกันสแปม
+
+#### เกณฑ์การยอมรับ
+
+1. เมื่อความคิดเห็นถูกรายงาน ผู้ดูแลจะสามารถตรวจสอบและดูแลได้
+2. เมื่อมีการส่งการมีส่วนร่วม ผู้ดูแลจะสามารถอนุมัติหรือปฏิเสธได้
+3. เมื่อผู้ใช้ละเมิดแนวทาง ผู้ดูแลจะสามารถดำเนินการที่เหมาะสมได้
+4. เมื่อมีการดำเนินการดูแล ระบบจะแจ้งผู้ใช้ที่ได้รับผลกระทบ
+5. หากเนื้อหาถูกลบ ระบบจะให้เหตุผลที่ชัดเจนแก่ผู้ใช้
+
+### ความต้องการที่ 12
+
+**เรื่องราวผู้ใช้:** ในฐานะผู้ดูแลไซต์ ฉันต้องการติดตามการใช้งานและประสิทธิภาพ เพื่อให้ฉันสามารถมั่นใจได้ว่าไซต์อยู่ในขีดจำกัดฟรีเทียร์และทำงานได้ดี
+
+#### เกณฑ์การยอมรับ
+
+1. เมื่อไซต์ทำงาน ระบบจะติดตามการใช้งานฐานข้อมูล Supabase
+2. เมื่อมีการเรียก API ระบบจะติดตามขีดจำกัดการทำงานของฟังก์ชัน Vercel
+3. เมื่อเกิดปัญหาประสิทธิภาพ ระบบจะให้การแจ้งเตือนและการติดตาม
+4. หากการใช้งานเข้าใกล้ขีดจำกัด ระบบจะใช้การจำกัดอัตรา
+5. เมื่อรวบรวมการวิเคราะห์ ระบบจะเคารพความเป็นส่วนตัวของผู้ใช้และ GDPR
+
+### ความต้องการที่ 13
+
+**เรื่องราวผู้ใช้:** ในฐานะผู้ใช้ ฉันต้องการอัปเดตแบบเรียลไทม์ เพื่อให้ฉันสามารถเห็นความคิดเห็นและคำตอบใหม่ทันที
+
+#### เกณฑ์การยอมรับ
+
+1. เมื่อมีการส่งความคิดเห็นใหม่ ระบบจะอัปเดต UI แบบเรียลไทม์
+2. เมื่อคำถามได้รับคำตอบ ระบบจะแจ้งผู้เขียนคำถาม
+3. เมื่อการมีส่วนร่วมได้รับการอนุมัติ ระบบจะแจ้งผู้มีส่วนร่วม
+4. หากฟีเจอร์เรียลไทม์ล้มเหลว ระบบจะถอยกลับไปยังการรีเฟรชด้วยตนเองอย่างสง่างาม
+5. เมื่อมีการอัปเดตเรียลไทม์ ระบบจะรักษาประสิทธิภาพที่ดี
+
+### ความต้องการที่ 14
+
+**เรื่องราวผู้ใช้:** ในฐานะผู้ใช้มือถือ ฉันต้องการให้ฟีเจอร์โต้ตอบทำงานได้ดีบนอุปกรณ์ของฉัน เพื่อให้ฉันสามารถมีส่วนร่วมในชุมชนจากที่ไหนก็ได้
+
+#### เกณฑ์การยอมรับ
+
+1. เมื่อใช้อุปกรณ์มือถือ ระบบจะให้การออกแบบที่ตอบสนองสำหรับฟีเจอร์โต้ตอบทั้งหมด
+2. เมื่อพิมพ์ความคิดเห็น ระบบจะให้วิธีการป้อนข้อมูลที่เป็นมิตรกับมือถือ
+3. เมื่อดูความคิดเห็น ระบบจะปรับแต่งเลย์เอาต์สำหรับหน้าจอขนาดเล็ก
+4. เมื่อยืนยันตัวตน ระบบจะรองรับการไหลของ OAuth บนมือถือ
+5. เมื่อใช้อินเทอร์เฟซสัมผัส ระบบจะให้เป้าหมายการสัมผัสที่เหมาะสม
+
+## ข้อจำกัดทางเทคนิค
+
+### ข้อจำกัดฟรีเทียร์
+- **Supabase**: ฐานข้อมูล 500MB ผู้ใช้ที่ใช้งานจริง 50,000 คนต่อเดือน แบนด์วิธ 2GB
+- **Vercel**: แบนด์วิธ 100GB การทำงานของฟังก์ชันเซิร์ฟเวอร์เลส 100 ครั้งต่อวัน
+- **ประสิทธิภาพ**: ต้องรักษาเวลาการโหลดหน้าต่ำกว่า 3 วินาที
+- **การขยายตัว**: สถาปัตยกรรมต้องรองรับการเติบโตเกินขีดจำกัดฟรีเทียร์
+
+### ความต้องการด้านความปลอดภัย
+- **การยืนยันตัวตน**: การใช้งาน OAuth ที่ปลอดภัยกับ GitHub
+- **การป้องกันข้อมูล**: Row Level Security (RLS) บนตารางฐานข้อมูลทั้งหมด
+- **การตรวจสอบข้อมูลเข้า**: ข้อมูลเข้าของผู้ใช้ทั้งหมดต้องได้รับการตรวจสอบและทำความสะอาด
+- **การจำกัดอัตรา**: ป้องกันการละเมิดทรัพยากรฟรีเทียร์
+
+### ความต้องการด้านประสิทธิภาพ
+- **การสร้างแบบสถิต**: เนื้อหาหลักต้องสร้างแบบสถิต
+- **การโหลดแบบไดนามิก**: ฟีเจอร์โต้ตอบต้องโหลดตามความต้องการ
+- **การแคช**: ใช้การแคชอย่างแข็งขันสำหรับการตอบสนอง API
+- **CDN**: ใช้เครือข่าย edge ของ Vercel สำหรับประสิทธิภาพทั่วโลก
