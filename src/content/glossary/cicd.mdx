@@ -8,6 +8,8 @@ tags: ["devops", "automation", "deployment", "testing"]
 lastUpdated: 2024-01-15T00:00:00.000Z
 ---
 
+import CodeBlock from '../../components/CodeBlock.astro';
+
 # CI/CD (Continuous Integration/Continuous Deployment)
 
 CI/CD เป็นแนวปฏิบัติในการพัฒนาซอฟต์แวร์ที่ช่วยให้ทีมพัฒนาสามารถส่งมอบซอฟต์แวร์ได้อย่างรวดเร็ว มีคุณภาพ และเชื่อถือได้ โดยแบ่งออกเป็น 2 ส่วนหลัก:
@@ -38,8 +40,11 @@ CI เป็นแนวปฏิบัติที่นักพัฒนา�
 
 ### GitHub Actions Workflow
 
-```yaml
-name: CI/CD Pipeline
+<CodeBlock 
+  language="yaml" 
+  title="GitHub Actions CI/CD Pipeline"
+  filename=".github/workflows/ci-cd.yml"
+  code={`name: CI/CD Pipeline
 
 on:
   push:
@@ -83,14 +88,16 @@ jobs:
     - name: Deploy to production
       run: |
         echo "Deploying to production..."
-        # Deploy commands here
-```
+        # Deploy commands here`}
+/>
 
 ### GitLab CI/CD Configuration
 
-```yaml
-# .gitlab-ci.yml
-stages:
+<CodeBlock 
+  language="yaml" 
+  title="GitLab CI/CD Pipeline"
+  filename=".gitlab-ci.yml"
+  code={`stages:
   - test
   - build
   - deploy
@@ -105,7 +112,7 @@ test:
     - npm ci
     - npm run test
     - npm run lint
-  coverage: '/Lines\s*:\s*(\d+\.\d+)%/'
+  coverage: '/Lines\\s*:\\s*(\\d+\\.\\d+)%/'
 
 build:
   stage: build
@@ -139,13 +146,16 @@ deploy_production:
     url: https://example.com
   only:
     - main
-  when: manual
-```
+  when: manual`}
+/>
 
 ### Jenkins Pipeline
 
-```groovy
-pipeline {
+<CodeBlock 
+  language="java" 
+  title="Jenkins Pipeline Script"
+  filename="Jenkinsfile"
+  code={`pipeline {
     agent any
     
     stages {
@@ -192,14 +202,14 @@ pipeline {
     post {
         failure {
             emailext (
-                subject: "Build Failed: ${env.JOB_NAME} - ${env.BUILD_NUMBER}",
-                body: "Build failed. Check console output at ${env.BUILD_URL}",
-                to: "${env.CHANGE_AUTHOR_EMAIL}"
+                subject: "Build Failed: \${env.JOB_NAME} - \${env.BUILD_NUMBER}",
+                body: "Build failed. Check console output at \${env.BUILD_URL}",
+                to: "\${env.CHANGE_AUTHOR_EMAIL}"
             )
         }
     }
-}
-```
+}`}
+/>
 
 ## เครื่องมือ CI/CD ยอดนิยม
 
