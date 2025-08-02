@@ -65,6 +65,7 @@ const {
         if (response.ok) {
           this.searchIndex = await response.json();
           console.log('Search index loaded:', this.searchIndex.length, 'items');
+          this.input.dataset.indexLoaded = 'true';
         } else {
           console.error('Failed to load search index:', response.status);
         }
@@ -146,6 +147,20 @@ const {
   document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM loaded, initializing SimpleSearch...');
     new SimpleSearch();
+  });
+  
+  // Also initialize on window load to ensure preloaded resources are used
+  window.addEventListener('load', () => {
+    // This ensures the preloaded search index is utilized
+    if (!document.querySelector('.search-container')) return;
+    
+    // Trigger a prefetch if search component exists but hasn't loaded index yet
+    const searchInput = document.getElementById('simple-search');
+    if (searchInput && !searchInput.dataset.indexLoaded) {
+      fetch('/api/search-index.json').then(() => {
+        console.log('Search index prefetched successfully');
+      }).catch(console.error);
+    }
   });
 </script>
 

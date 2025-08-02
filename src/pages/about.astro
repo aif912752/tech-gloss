@@ -1,0 +1,285 @@
+---
+// About page - เกี่ยวกับ TechGloss
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { Icon } from '@tabler/icons';
+
+const pageTitle = 'เกี่ยวกับ TechGloss';
+const pageDescription = 'เรียนรู้เกี่ยวกับ TechGloss - พจนานุกรมเทคนิคสำหรับนักพัฒนาที่ใช้งานง่าย เข้าใจง่าย และเป็นมิตรกับสิ่งแวดล้อม';
+---
+
+<BaseLayout 
+  title={pageTitle}
+  description={pageDescription}
+  type="website"
+>
+  <!-- Hero Section -->
+  <section class="text-center mb-16">
+    <div class="inline-flex items-center justify-center w-20 h-20 bg-primary/10 rounded-2xl mb-6">
+      <span class="text-4xl">🌿</span>
+    </div>
+    <h1 class="text-4xl md:text-5xl font-bold text-foreground mb-4">
+      เกี่ยวกับ <span class="text-primary">TechGloss</span>
+    </h1>
+    <p class="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+      พจนานุกรมเทคนิคสำหรับนักพัฒนาที่ออกแบบมาเพื่อให้การเรียนรู้เทคโนโลยีเป็นเรื่องง่าย 
+      เข้าใจง่าย และเป็นมิตรกับสิ่งแวดล้อม
+    </p>
+  </section>
+
+  <!-- Mission Section -->
+  <section class="mb-16">
+    <div class="bg-card rounded-2xl p-8 md:p-12 border border-border">
+      <h2 class="text-3xl font-bold text-foreground mb-6 text-center">
+        พันธกิจของเรา
+      </h2>
+      <div class="grid md:grid-cols-3 gap-8">
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-xl mb-4">
+            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-foreground mb-2">เรียนรู้ง่าย</h3>
+          <p class="text-muted-foreground">
+            อธิบายคำศัพท์เทคนิคด้วยภาษาที่เข้าใจง่าย พร้อมตัวอย่างที่ชัดเจน
+          </p>
+        </div>
+        
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-xl mb-4">
+            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0 9c-1.657 0-3-4.03-3-9s1.343-9 3-9m0 9c1.657 0 3 4.03 3 9s-1.343 9-3-9"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-foreground mb-2">ครอบคลุม</h3>
+          <p class="text-muted-foreground">
+            รวบรวมคำศัพท์เทคนิคจากหลากหลายสาขา ทั้ง Frontend, Backend, DevOps และอื่นๆ
+          </p>
+        </div>
+        
+        <div class="text-center">
+          <div class="inline-flex items-center justify-center w-16 h-16 bg-primary/10 rounded-xl mb-4">
+            <svg class="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
+            </svg>
+          </div>
+          <h3 class="text-xl font-semibold text-foreground mb-2">เป็นมิตร</h3>
+          <p class="text-muted-foreground">
+            ออกแบบด้วยหลักการ Green Design เพื่อลดการใช้พลังงานและเป็นมิตรกับสิ่งแวดล้อม
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features Section -->
+  <section class="mb-16">
+    <h2 class="text-3xl font-bold text-foreground mb-8 text-center">
+      คุณสมบัติเด่น
+    </h2>
+    <div class="grid md:grid-cols-2 gap-8">
+      <div class="bg-card rounded-xl p-6 border border-border">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0">
+            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-foreground mb-2">ค้นหาอัจฉริยะ</h3>
+            <p class="text-muted-foreground">
+              ระบบค้นหาที่รวดเร็วและแม่นยำ สามารถค้นหาได้ทั้งชื่อ คำอธิบาย และหมวดหมู่
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-card rounded-xl p-6 border border-border">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0">
+            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"/>
+              </svg>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-foreground mb-2">Responsive Design</h3>
+            <p class="text-muted-foreground">
+              ใช้งานได้ลื่นไหลทั้งบนมือถือ แท็บเล็ต และคอมพิวเตอร์
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-card rounded-xl p-6 border border-border">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0">
+            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+              </svg>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-foreground mb-2">Dark/Light Mode</h3>
+            <p class="text-muted-foreground">
+              รองรับทั้งโหมดสว่างและโหมดมืด เพื่อประสบการณ์การใช้งานที่ดีที่สุด
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-card rounded-xl p-6 border border-border">
+        <div class="flex items-start space-x-4">
+          <div class="flex-shrink-0">
+            <div class="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+              <svg class="w-6 h-6 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+              </svg>
+            </div>
+          </div>
+          <div>
+            <h3 class="text-lg font-semibold text-foreground mb-2">Performance</h3>
+            <p class="text-muted-foreground">
+              โหลดเร็ว ประหยัดแบตเตอรี่ และใช้ข้อมูลอินเทอร์เน็ตน้อย
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Green Theme Section -->
+  <section class="mb-16">
+    <div class="bg-gradient-to-r from-primary/5 to-primary/10 rounded-2xl p-8 md:p-12 border border-primary/20">
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 bg-primary/20 rounded-xl mb-4">
+          <span class="text-2xl">🌱</span>
+        </div>
+        <h2 class="text-3xl font-bold text-foreground mb-4">
+          Green Knowledge Theme
+        </h2>
+        <p class="text-lg text-muted-foreground max-w-2xl mx-auto">
+          เราเชื่อว่าการเรียนรู้ควรเป็นมิตรกับสิ่งแวดล้อม
+        </p>
+      </div>
+      
+      <div class="grid md:grid-cols-2 gap-8">
+        <div>
+          <h3 class="text-xl font-semibold text-foreground mb-4">🌿 Eco-Friendly Design</h3>
+          <ul class="space-y-2 text-muted-foreground">
+            <li class="flex items-start">
+              <span class="text-primary mr-2">•</span>
+              ใช้สีเขียวเป็นหลักเพื่อลดการใช้พลังงานหน้าจอ
+            </li>
+            <li class="flex items-start">
+              <span class="text-primary mr-2">•</span>
+              ออกแบบให้โหลดเร็วและใช้ข้อมูลน้อย
+            </li>
+            <li class="flex items-start">
+              <span class="text-primary mr-2">•</span>
+              รองรับ Dark Mode เพื่อประหยัดแบตเตอรี่
+            </li>
+          </ul>
+        </div>
+        
+        <div>
+          <h3 class="text-xl font-semibold text-foreground mb-4">♻️ Sustainable Learning</h3>
+          <ul class="space-y-2 text-muted-foreground">
+            <li class="flex items-start">
+              <span class="text-primary mr-2">•</span>
+              เนื้อหาคุณภาพสูงที่ใช้ได้นาน
+            </li>
+            <li class="flex items-start">
+              <span class="text-primary mr-2">•</span>
+              ลดการพิมพ์เอกสารด้วยการให้ข้อมูลครบถ้วน
+            </li>
+            <li class="flex items-start">
+              <span class="text-primary mr-2">•</span>
+              ส่งเสริมการเรียนรู้แบบยั่งยืน
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Technology Stack -->
+  <section class="mb-16">
+    <h2 class="text-3xl font-bold text-foreground mb-8 text-center">
+      เทคโนโลยีที่ใช้
+    </h2>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div class="text-center p-6 bg-card rounded-xl border border-border hover:border-primary/30 transition-colors">
+        <div class="w-12 h-12 mx-auto mb-3 bg-[#FF5D01]/10 rounded-lg flex items-center justify-center">
+          <span class="text-2xl">🚀</span>
+        </div>
+        <h3 class="font-semibold text-foreground mb-1">Astro</h3>
+        <p class="text-sm text-muted-foreground">Static Site Generator</p>
+      </div>
+      
+      <div class="text-center p-6 bg-card rounded-xl border border-border hover:border-primary/30 transition-colors">
+        <div class="w-12 h-12 mx-auto mb-3 bg-[#3178C6]/10 rounded-lg flex items-center justify-center">
+          <span class="text-2xl">📘</span>
+        </div>
+        <h3 class="font-semibold text-foreground mb-1">TypeScript</h3>
+        <p class="text-sm text-muted-foreground">Type Safety</p>
+      </div>
+      
+      <div class="text-center p-6 bg-card rounded-xl border border-border hover:border-primary/30 transition-colors">
+        <div class="w-12 h-12 mx-auto mb-3 bg-[#06B6D4]/10 rounded-lg flex items-center justify-center">
+          <span class="text-2xl">🎨</span>
+        </div>
+        <h3 class="font-semibold text-foreground mb-1">Tailwind CSS</h3>
+        <p class="text-sm text-muted-foreground">Styling</p>
+      </div>
+      
+      <div class="text-center p-6 bg-card rounded-xl border border-border hover:border-primary/30 transition-colors">
+        <div class="w-12 h-12 mx-auto mb-3 bg-[#FF6B6B]/10 rounded-lg flex items-center justify-center">
+          <span class="text-2xl">🔍</span>
+        </div>
+        <h3 class="font-semibold text-foreground mb-1">Fuse.js</h3>
+        <p class="text-sm text-muted-foreground">Search Engine</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contact Section -->
+  <section class="text-center">
+    <div class="bg-card rounded-2xl p-8 md:p-12 border border-border">
+      <h2 class="text-3xl font-bold text-foreground mb-4">
+        ติดต่อเรา
+      </h2>
+      <p class="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
+        มีคำแนะนำ ข้อเสนอแนะ หรือต้องการเพิ่มคำศัพท์ใหม่? เรายินดีรับฟังความคิดเห็นจากคุณ
+      </p>
+      
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <a 
+          href="/newsletter" 
+          class="inline-flex items-center px-6 py-3 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors font-medium"
+        >
+          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+          </svg>
+          สมัครรับ Newsletter
+        </a>
+        
+        <a 
+          href="https://github.com" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          class="inline-flex items-center px-6 py-3 bg-muted text-muted-foreground rounded-lg hover:bg-accent hover:text-foreground transition-colors font-medium"
+        >
+          <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+          </svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
