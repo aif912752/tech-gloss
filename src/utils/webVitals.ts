@@ -434,18 +434,8 @@ export function sendToAnalytics(metric: WebVitalsMetric) {
     });
   }
 
-  // Send to custom analytics endpoint only in production
-  if (process.env.NODE_ENV === 'production') {
-    fetch('/api/analytics/web-vitals', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(metric),
-    }).catch(error => {
-      console.warn('Failed to send metric to analytics:', error);
-    });
-  }
+  // Analytics endpoint removed for static site
+  // In production, you could send to external analytics services like Google Analytics
 }
 
 // Auto-initialize if in browser
