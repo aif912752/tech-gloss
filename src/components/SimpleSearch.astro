@@ -51,13 +51,21 @@ const {
     
     async init() {
       // Load search index immediately to utilize preloaded resource
-      this.loadSearchIndex();
+      await this.loadSearchIndex();
       
       this.setupEventListeners();
     }
     
     async loadSearchIndex() {
       try {
+        // Check if search index is already cached
+        if ((window as any).__SEARCH_INDEX__) {
+          console.log('Using cached search index');
+          this.searchIndex = (window as any).__SEARCH_INDEX__;
+          this.input.dataset.indexLoaded = 'true';
+          return;
+        }
+        
         console.log('Loading search index...');
         const response = await fetch('/api/search-index.json');
         console.log('Response status:', response.status);
@@ -66,6 +74,9 @@ const {
           this.searchIndex = await response.json();
           console.log('Search index loaded:', this.searchIndex.length, 'items');
           this.input.dataset.indexLoaded = 'true';
+          
+          // Cache for future use
+          (window as any).__SEARCH_INDEX__ = this.searchIndex;
         } else {
           console.error('Failed to load search index:', response.status);
         }
@@ -143,24 +154,25 @@ const {
     }
   }
   
-  // Initialize when DOM is ready
-  document.addEventListener('DOMContentLoaded', () => {
+  // Initialize when DOM is ready and immediately load search index
+  document.addEventListener('DOMContentLoaded', async () => {
     console.log('DOM loaded, initializing SimpleSearch...');
-    new SimpleSearch();
-  });
-  
-  // Also initialize on window load to ensure preloaded resources are used
-  window.addEventListener('load', () => {
-    // This ensures the preloaded search index is utilized
-    if (!document.querySelector('.search-container')) return;
     
-    // Trigger a prefetch if search component exists but hasn't loaded index yet
-    const searchInput = document.getElementById('simple-search');
-    if (searchInput && !searchInput.dataset.indexLoaded) {
-      fetch('/api/search-index.json').then(() => {
-        console.log('Search index prefetched successfully');
-      }).catch(console.error);
+    // Pre-load search index to utilize preloaded resource
+    try {
+      const response = await fetch('/api/search-index.json');
+      if (response.ok) {
+        const searchIndex = await response.json();
+        console.log('Search index pre-loaded:', searchIndex.length, 'items');
+        
+        // Store in a global variable for the component to use
+        (window as any).__SEARCH_INDEX__ = searchIndex;
+      }
+    } catch (error) {
+      console.error('Failed to pre-load search index:', error);
     }
+    
+    new SimpleSearch();
   });
 </script>
 

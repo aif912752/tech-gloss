@@ -21,7 +21,7 @@ export interface Props {
   entry?: any;
   allTerms?: any[];
   structuredDataType?: "website" | "glossary" | "term";
-  preloadSearch?: boolean;
+
 }
 
 const {
@@ -40,7 +40,7 @@ const {
   entry,
   allTerms,
   structuredDataType = "website",
-  preloadSearch = false,
+
 } = Astro.props;
 ---
 
@@ -70,15 +70,7 @@ const {
       allTerms={allTerms}
       structuredDataType={structuredDataType}
     />
-    <!-- Preload search index only if needed -->
-    {Astro.url.pathname === '/' && (
-      <link
-        rel="preload"
-        href="/api/search-index.json"
-        as="fetch"
-        crossorigin="anonymous"
-      />
-    )}
+    <!-- Search index will be loaded when needed by search component -->
     <link rel="dns-prefetch" href="//fonts.googleapis.com" />
 
     <!-- Performance optimizations -->
